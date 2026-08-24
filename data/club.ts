@@ -473,160 +473,58 @@ export function getMaterialById(id: string): Material | undefined {
   return materials.find((m) => m.id === id);
 }
 
-export interface Tariff {
-  id: string;
-  title: string;
-  composition: string[];
-  purpose: string;
-  highlight?: boolean;
-}
-
-export const tariffs: Tariff[] = [
-  {
-    id: "pilot",
-    title: "Пилот",
-    composition: [
-      "Доступ к материалам на 4 недели",
-      "Задания и чек-листы",
-      "Вопросы специалисту",
-      "Групповые разборы",
-    ],
-    purpose: "Проверить продукт перед долгосрочным участием.",
-  },
-  {
-    id: "standard",
-    title: "Стандарт",
-    composition: [
-      "Доступ к клубу на 1 месяц",
-      "Еженедельные материалы и эфиры",
-      "Разборы косметики",
-      "Клубные скидки",
-    ],
-    purpose: "Основной формат участия в клубе.",
-    highlight: true,
-  },
-  {
-    id: "medical",
-    title: "Медицинская поддержка",
-    composition: [
-      "Всё из тарифа «Стандарт»",
-      "Ежемесячная консультация врача",
-      "Разбор результатов анализов",
-    ],
-    purpose: "Для тех, кому нужен медицинский навигатор.",
-  },
-  {
-    id: "premium",
-    title: "Премиум",
-    composition: [
-      "Стандарт или медицинская поддержка",
-      "Индивидуальная консультация или диагностика в салоне",
-    ],
-    purpose: "Переход в персональные услуги салона.",
-  },
-];
-
-export function getTariffById(id: string): Tariff | undefined {
-  return tariffs.find((t) => t.id === id);
-}
-
 export interface DiscountCategory {
   id: string;
   title: string;
   percent: number;
   description: string;
+  requiredCompleted: number;
 }
 
 export const discountCategories: DiscountCategory[] = [
-  {
-    id: "peptides",
-    title: "Пептиды для похудения",
-    percent: 10,
-    description: "Скидка действует при соблюдении условий акции и медицинских ограничений.",
-  },
-  {
-    id: "supplements",
-    title: "БАДы",
-    percent: 10,
-    description: "Каталог и заявка на подбор. Подбор не заменяет консультацию врача.",
-  },
-  {
-    id: "selection",
-    title: "Подборы",
-    percent: 10,
-    description: "Запрос на индивидуальный подбор. Не заменяет консультацию врача.",
-  },
   {
     id: "cosmetics",
     title: "Косметика",
     percent: 15,
     description: "Скидка на товары, участвующие в программе.",
+    requiredCompleted: 1,
   },
   {
     id: "procedures",
     title: "Процедуры салона",
     percent: 15,
     description: "Скидка на процедуры, участвующие в программе.",
+    requiredCompleted: 2,
+  },
+  {
+    id: "selection",
+    title: "Подборы",
+    percent: 10,
+    description: "Запрос на индивидуальный подбор. Не заменяет консультацию врача.",
+    requiredCompleted: 2,
+  },
+  {
+    id: "supplements",
+    title: "БАДы",
+    percent: 10,
+    description: "Каталог и заявка на подбор. Подбор не заменяет консультацию врача.",
+    requiredCompleted: 3,
+  },
+  {
+    id: "peptides",
+    title: "Пептиды для похудения",
+    percent: 10,
+    description: "Скидка действует при соблюдении условий акции и медицинских ограничений.",
+    requiredCompleted: 4,
   },
 ];
 
 export const DISCOUNT_WARNING =
   "Товары и добавки могут иметь противопоказания и лекарственные взаимодействия. Подбор и применение необходимо согласовать с врачом.";
 
-export interface MedicalService {
-  id: string;
-  title: string;
-  description: string;
-  bullets: string[];
+export function getTasksAndChecklists(): Material[] {
+  return materials.filter((m) => m.type === "task" || m.type === "checklist");
 }
-
-export const medicalServices: MedicalService[] = [
-  {
-    id: "consult",
-    title: "Консультация врача онлайн",
-    description:
-      "Доступ к врачу или медицинскому партнёру согласно фактическому графику и правилам сервиса.",
-    bullets: [
-      "Врач даёт рекомендации в пределах своей компетенции.",
-      "Чат не заменяет скорую помощь — в экстренной ситуации обратитесь в местную экстренную службу.",
-      "Ответ приходит в защищённом канале связи.",
-    ],
-  },
-  {
-    id: "labs",
-    title: "Разбор результатов анализов",
-    description: "Один раз в месяц врач объясняет результаты и подсказывает следующие шаги.",
-    bullets: [
-      "Врач объяснит результаты анализов и подскажет, какие вопросы обсудить очно.",
-      "Мы разбираем результаты, объясняем показатели и помогаем определить следующие шаги вместе с врачом.",
-      "Клуб и администратор не ставят диагнозы и не назначают лечение.",
-    ],
-  },
-  {
-    id: "checkup",
-    title: "Мой чекап",
-    description: "Запись на чекап, анкета перед чекапом или навигация по уже имеющимся результатам.",
-    bullets: [
-      "Состав, исполнителя и срок действия услуги уточняет медицинский партнёр.",
-      "Правила подготовки и список нужных данных приходят перед чекапом.",
-      "Уточните у администратора, входит ли чекап в ваш тариф одновременно с разбором анализов.",
-    ],
-  },
-];
-
-export interface LiveSession {
-  id: string;
-  date: string;
-  time: string;
-  topic: string;
-}
-
-export const liveSessions: LiveSession[] = [
-  { id: "live-1", date: "29 августа", time: "19:00", topic: "Разбор вопросов недели: кожа и пигментация" },
-  { id: "live-2", date: "5 сентября", time: "19:00", topic: "Домашняя система ухода за волосами" },
-  { id: "live-3", date: "12 сентября", time: "19:00", topic: "Салон изнутри: как проходит честная диагностика" },
-  { id: "live-4", date: "19 сентября", time: "19:00", topic: "Итоги потока и вопросы участниц" },
-];
 
 export interface Rubric {
   id: string;
@@ -728,7 +626,7 @@ export const diagnosisQuestions: DiagnosisQuestion[] = [
       { id: "q3-instructions", label: "Короткие инструкции", focusId: "time" },
       { id: "q3-reviews", label: "Разборы и ответы специалиста", focusId: "tone" },
       { id: "q3-checklists", label: "Чек-листы", focusId: "dryness" },
-      { id: "q3-live", label: "Эфиры", focusId: "tired" },
+      { id: "q3-voice", label: "Голосовые сообщения эксперта", focusId: "tired" },
       { id: "q3-community", label: "Общение с другими участницами", focusId: "hair" },
     ],
   },

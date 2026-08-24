@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Send } from "lucide-react";
 import Disclaimer from "@/components/Disclaimer";
-import { postWithAuth } from "@/lib/apiClient";
+import { openWhatsApp } from "@/lib/whatsapp";
 import { hapticImpact, hapticNotification } from "@/lib/telegram";
 
 const TOPICS = ["Кожа", "Волосы", "Домашний уход", "Процедуры", "Продукты", "Энергия и привычки", "Другое"];
@@ -11,20 +11,15 @@ const TOPICS = ["Кожа", "Волосы", "Домашний уход", "Про
 export default function AskPage() {
   const [topic, setTopic] = useState(TOPICS[0]);
   const [message, setMessage] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "sent">("idle");
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!message.trim()) return;
-    setStatus("sending");
-    try {
-      await postWithAuth("/api/ask", { topic, message });
-      setStatus("sent");
-      setMessage("");
-      hapticNotification("success");
-    } catch {
-      setStatus("error");
-      hapticNotification("error");
-    }
+    const text = `Вопрос специалисту\nТема: ${topic}\n\n${message}`;
+    openWhatsApp(text);
+    setStatus("sent");
+    setMessage("");
+    hapticNotification("success");
   };
 
   return (
@@ -32,7 +27,7 @@ export default function AskPage() {
       <div className="px-5 pt-6 animate-fade-up">
         <h1 className="text-3xl font-semibold tracking-tight text-ink">Задать вопрос</h1>
         <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-          Выберите тему и опишите ситуацию — ответ придёт лично или в общий разбор.
+          Выберите тему и опишите ситуацию — вопрос уйдёт в WhatsApp, и вам ответят лично.
         </p>
       </div>
 
@@ -66,11 +61,8 @@ export default function AskPage() {
           <Disclaimer text="Клуб носит информационно-образовательный характер. По фотографиям и переписке нельзя поставить медицинский диагноз. При выраженных или необычных симптомах обратитесь к профильному специалисту очно." />
         </div>
 
-        {status === "error" && (
-          <p className="mt-3 text-xs text-red-500">Не получилось отправить вопрос. Попробуйте ещё раз.</p>
-        )}
         {status === "sent" && (
-          <p className="mt-3 text-xs text-beige-dark">Вопрос отправлен! Мы ответим лично или в общем разборе.</p>
+          <p className="mt-3 text-xs text-beige-dark">Открылся WhatsApp — отправьте сообщение, чтобы задать вопрос.</p>
         )}
 
         <button
@@ -79,10 +71,10 @@ export default function AskPage() {
             hapticImpact("medium");
             handleSubmit();
           }}
-          disabled={status === "sending" || !message.trim()}
+          disabled={!message.trim()}
           className="tap-scale mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white shadow-button disabled:opacity-50"
         >
-          {status === "sending" ? "Отправляем..." : "Отправить вопрос"}
+          Отправить вопрос в WhatsApp
           <Send className="w-4 h-4" strokeWidth={2} />
         </button>
       </div>

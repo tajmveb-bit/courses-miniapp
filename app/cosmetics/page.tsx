@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Send } from "lucide-react";
 import Disclaimer from "@/components/Disclaimer";
-import { postWithAuth } from "@/lib/apiClient";
+import { openWhatsApp } from "@/lib/whatsapp";
 import { hapticImpact, hapticNotification } from "@/lib/telegram";
 
 const TOPICS = [
@@ -18,20 +18,15 @@ const TOPICS = [
 export default function CosmeticsPage() {
   const [topic, setTopic] = useState(TOPICS[0]);
   const [details, setDetails] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "sent">("idle");
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!details.trim()) return;
-    setStatus("sending");
-    try {
-      await postWithAuth("/api/cosmetics", { topic, details });
-      setStatus("sent");
-      setDetails("");
-      hapticNotification("success");
-    } catch {
-      setStatus("error");
-      hapticNotification("error");
-    }
+    const message = `Разбор косметики\nТема: ${topic}\n\n${details}`;
+    openWhatsApp(message);
+    setStatus("sent");
+    setDetails("");
+    hapticNotification("success");
   };
 
   return (
@@ -39,7 +34,7 @@ export default function CosmeticsPage() {
       <div className="px-5 pt-6 animate-fade-up">
         <h1 className="text-3xl font-semibold tracking-tight text-ink">Разбор косметики</h1>
         <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-          Пришлите название, ссылку или состав средства — до одного разбора в месяц по тарифу.
+          Пришлите название, ссылку или состав средства — запрос уйдёт в WhatsApp.
         </p>
       </div>
 
@@ -73,8 +68,9 @@ export default function CosmeticsPage() {
           <Disclaimer text="Разбор объясняет назначение ключевых компонентов и место продукта в уходе, но не обещает лечение или гарантированный результат." />
         </div>
 
-        {status === "error" && <p className="mt-3 text-xs text-red-500">Не получилось отправить. Попробуйте ещё раз.</p>}
-        {status === "sent" && <p className="mt-3 text-xs text-beige-dark">Отправлено! Ответ придёт в этом чате.</p>}
+        {status === "sent" && (
+          <p className="mt-3 text-xs text-beige-dark">Открылся WhatsApp — отправьте сообщение, чтобы завершить запрос.</p>
+        )}
 
         <button
           type="button"
@@ -82,10 +78,10 @@ export default function CosmeticsPage() {
             hapticImpact("medium");
             handleSubmit();
           }}
-          disabled={status === "sending" || !details.trim()}
+          disabled={!details.trim()}
           className="tap-scale mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white shadow-button disabled:opacity-50"
         >
-          {status === "sending" ? "Отправляем..." : "Отправить на разбор"}
+          Отправить на разбор в WhatsApp
           <Send className="w-4 h-4" strokeWidth={2} />
         </button>
       </div>

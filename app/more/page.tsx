@@ -1,11 +1,8 @@
 import Link from "next/link";
 import {
-  CreditCard,
   ListChecks,
   TrendingUp,
-  Radio,
   MapPin,
-  Stethoscope,
   FlaskConical,
   Percent,
   User,
@@ -13,12 +10,9 @@ import {
 } from "lucide-react";
 
 const ITEMS = [
-  { href: "/tariffs", label: "Тариф и оплата", icon: CreditCard },
   { href: "/tasks", label: "Задания и чек-листы", icon: ListChecks },
   { href: "/progress", label: "Мой прогресс", icon: TrendingUp },
-  { href: "/live", label: "Эфиры и расписание", icon: Radio },
   { href: "/salon", label: "Записаться в салон", icon: MapPin },
-  { href: "/medical", label: "Медицинская поддержка", icon: Stethoscope },
   { href: "/cosmetics", label: "Разбор косметики", icon: FlaskConical },
   { href: "/discounts", label: "Мои скидки", icon: Percent },
   { href: "/about", label: "Об эксперте", icon: User },

@@ -13,11 +13,10 @@ interface DiagnosisResult {
 interface ProgressState {
   saved: string[];
   completed: string[];
-  reminders: string[];
   diagnosis: DiagnosisResult | null;
 }
 
-const EMPTY: ProgressState = { saved: [], completed: [], reminders: [], diagnosis: null };
+const EMPTY: ProgressState = { saved: [], completed: [], diagnosis: null };
 
 function readProgress(): ProgressState {
   if (typeof window === "undefined") return EMPTY;
@@ -29,9 +28,6 @@ function readProgress(): ProgressState {
       saved: Array.isArray(parsed.saved) ? parsed.saved.filter((id: unknown) => typeof id === "string") : [],
       completed: Array.isArray(parsed.completed)
         ? parsed.completed.filter((id: unknown) => typeof id === "string")
-        : [],
-      reminders: Array.isArray(parsed.reminders)
-        ? parsed.reminders.filter((id: unknown) => typeof id === "string")
         : [],
       diagnosis: parsed.diagnosis && typeof parsed.diagnosis.focusId === "string" ? parsed.diagnosis : null,
     };
@@ -88,17 +84,6 @@ export function useProgress() {
     });
   }, []);
 
-  const toggleReminder = useCallback((liveId: string) => {
-    setState((prev) => {
-      const reminders = prev.reminders.includes(liveId)
-        ? prev.reminders.filter((id) => id !== liveId)
-        : [...prev.reminders, liveId];
-      const next = { ...prev, reminders };
-      writeProgress(next);
-      return next;
-    });
-  }, []);
-
   const saveDiagnosis = useCallback((focusId: string) => {
     setState((prev) => {
       const next = { ...prev, diagnosis: { focusId, completedAt: new Date().toISOString() } };
@@ -111,14 +96,11 @@ export function useProgress() {
     ready,
     saved: state.saved,
     completed: state.completed,
-    reminders: state.reminders,
     diagnosis: state.diagnosis,
     isSaved: (id: string) => state.saved.includes(id),
     isCompleted: (id: string) => state.completed.includes(id),
-    isReminded: (id: string) => state.reminders.includes(id),
     toggleSaved,
     toggleCompleted,
-    toggleReminder,
     saveDiagnosis,
   };
 }

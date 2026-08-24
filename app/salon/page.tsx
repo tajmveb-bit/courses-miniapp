@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Send } from "lucide-react";
-import { postWithAuth } from "@/lib/apiClient";
+import { openWhatsApp } from "@/lib/whatsapp";
 import { hapticImpact, hapticNotification } from "@/lib/telegram";
 
 const FORMATS = ["Консультация", "Кожа", "Волосы", "Процедура", "Домашний уход"];
@@ -10,22 +10,24 @@ const FORMATS = ["Консультация", "Кожа", "Волосы", "Про
 export default function SalonPage() {
   const [form, setForm] = useState({ name: "", city: "", contact: "", topic: "", time: "" });
   const [format, setFormat] = useState(FORMATS[0]);
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "sent">("idle");
 
   const update = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!form.contact.trim()) return;
-    setStatus("sending");
-    try {
-      await postWithAuth("/api/salon", { ...form, format });
-      setStatus("sent");
-      hapticNotification("success");
-    } catch {
-      setStatus("error");
-      hapticNotification("error");
-    }
+    const message =
+      `Запись в салон\n` +
+      `Имя: ${form.name || "—"}\n` +
+      `Город: ${form.city || "—"}\n` +
+      `Контакт: ${form.contact}\n` +
+      `Задача: ${form.topic || "—"}\n` +
+      `Формат: ${format}\n` +
+      `Удобное время: ${form.time || "—"}`;
+    openWhatsApp(message);
+    setStatus("sent");
+    hapticNotification("success");
   };
 
   return (
@@ -40,9 +42,9 @@ export default function SalonPage() {
 
       {status === "sent" ? (
         <div className="mx-5 mt-6 rounded-4xl bg-white shadow-soft p-6 text-center animate-fade-up">
-          <p className="text-base font-semibold text-ink">Заявка отправлена</p>
+          <p className="text-base font-semibold text-ink">Открылся WhatsApp</p>
           <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-            Мы свяжемся с вами, чтобы согласовать удобное время.
+            Отправьте сообщение — мы свяжемся с вами, чтобы согласовать удобное время.
           </p>
         </div>
       ) : (
@@ -95,12 +97,8 @@ export default function SalonPage() {
           </div>
 
           <p className="text-xs leading-relaxed text-ink-soft/80 mt-1">
-            Отправляя заявку, вы соглашаетесь на обратную связь по указанному контакту.
+            Заявка уходит в WhatsApp — сообщение уже будет заполнено вашими данными.
           </p>
-
-          {status === "error" && (
-            <p className="text-xs text-red-500">Не получилось отправить заявку. Попробуйте ещё раз.</p>
-          )}
 
           <button
             type="button"
@@ -108,10 +106,10 @@ export default function SalonPage() {
               hapticImpact("medium");
               handleSubmit();
             }}
-            disabled={status === "sending" || !form.contact.trim()}
+            disabled={!form.contact.trim()}
             className="tap-scale mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white shadow-button disabled:opacity-50"
           >
-            {status === "sending" ? "Отправляем..." : "Отправить заявку"}
+            Отправить заявку в WhatsApp
             <Send className="w-4 h-4" strokeWidth={2} />
           </button>
         </div>

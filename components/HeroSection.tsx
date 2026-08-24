@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { hapticImpact } from "@/lib/telegram";
+import { openWhatsApp } from "@/lib/whatsapp";
 
 export default function HeroSection() {
   return (
@@ -46,14 +47,17 @@ export default function HeroSection() {
           <Sparkles className="w-5 h-5" strokeWidth={2} />
           Пройти мини-диагностику
         </Link>
-        <Link
-          href="/tariffs"
-          onClick={() => hapticImpact("light")}
+        <button
+          type="button"
+          onClick={() => {
+            hapticImpact("light");
+            openWhatsApp("Здравствуйте! Хочу записаться в салон.");
+          }}
           className="tap-scale flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-4 text-base font-semibold text-ink shadow-card"
         >
-          Посмотреть тарифы
+          Записаться в салон
           <ArrowRight className="w-5 h-5" strokeWidth={2} />
-        </Link>
+        </button>
       </div>
     </section>
   );
