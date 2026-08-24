@@ -11,8 +11,8 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Алина — курсы по уходу за кожей",
-  description: "Онлайн-курсы по уходу за кожей и косметике от эксперта Алины",
+  title: "Красота без рабства — клуб ухода 35+",
+  description: "Спокойная система ухода за кожей и волосами для женщин 35+ с поддержкой специалиста",
 };
 
 export const viewport: Viewport = {

@@ -11,7 +11,7 @@ interface BackButtonProps {
 }
 
 export default function BackButton({
-  fallbackHref = "/courses",
+  fallbackHref = "/materials",
   className = "",
   variant = "light",
 }: BackButtonProps) {

@@ -1,14 +1,16 @@
 import Image from "next/image";
 import SocialLinks from "@/components/SocialLinks";
+import BackButton from "@/components/BackButton";
 
 const EXPERT_NAME = "Алина";
-const EXPERT_TAGLINE = "Эксперт по уходу за кожей и обучению в сфере красоты";
+const EXPERT_TAGLINE = "Косметолог, владелица салона красоты, автор клуба «Красота без рабства»";
 
 export default function AboutPage() {
   return (
     <main className="pt-safe-t pb-10">
-      <div className="px-5 pt-6 animate-fade-up">
-        <h1 className="text-3xl font-semibold tracking-tight text-ink">Обо мне</h1>
+      <div className="px-5 pt-6 flex items-center gap-3 animate-fade-up">
+        <BackButton fallbackHref="/more" />
+        <h1 className="text-3xl font-semibold tracking-tight text-ink">Об эксперте</h1>
       </div>
 
       <div className="px-5 mt-6 animate-fade-up [animation-delay:60ms] opacity-0">
@@ -32,25 +34,19 @@ export default function AboutPage() {
       <div className="px-5 mt-6 animate-fade-up [animation-delay:140ms] opacity-0">
         <div className="rounded-4xl bg-white shadow-soft p-6 flex flex-col gap-4">
           <p className="text-sm leading-relaxed text-ink-soft">
-            Более 5 лет я изучаю и практикую уход за кожей, а также помогаю женщинам
-            раскрывать их естественную красоту через знания и правильный уход.
+            Больше 5 лет я практикую как косметолог и руковожу собственным салоном. За это время я
+            увидела одну и ту же историю сотни раз: женщина 35+ устаёт превращать уход за собой во
+            вторую работу или, наоборот, бросает уход совсем.
           </p>
           <p className="text-sm leading-relaxed text-ink-soft">
-            За это время я прошла путь от первых экспериментов с косметикой до
-            построения системного подхода к уходу — того, которым сейчас делюсь в своих
-            курсах. Я разбираю составы, тестирую средства и слежу за исследованиями в
-            области косметологии, чтобы давать только проверенную информацию.
+            Клуб «Красота без рабства» — это спокойная система, а не марафон идеальности. Мы
+            собираем реалистичный уход за кожей и волосами, разбираем составы и вопросы участниц,
+            подключаем медицинскую навигацию там, где это уместно, и помогаем встроить заботу о
+            себе в обычную занятую жизнь.
           </p>
           <p className="text-sm leading-relaxed text-ink-soft">
-            Я создала эти курсы, потому что вижу, как много женщин теряются в
-            бесконечном потоке противоречивых советов и тратят деньги на средства,
-            которые им не подходят. Мне хочется, чтобы уход за собой был осознанным,
-            простым и приносил результат.
-          </p>
-          <p className="text-sm leading-relaxed text-ink-soft">
-            На моих курсах вы получите понятную систему: как определить свой тип кожи,
-            собрать эффективный уход и уверенно разбираться в косметике — без лишних
-            трат и разочарований.
+            43 — это не финиш. Я на собственном примере показываю, что собранность и уверенность в
+            себе не требуют жертв и бесконечных трат — нужна система, а не хаос.
           </p>
         </div>
       </div>

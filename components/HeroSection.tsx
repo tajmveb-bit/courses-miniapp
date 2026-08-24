@@ -2,13 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { hapticImpact } from "@/lib/telegram";
-
-const EXPERT_NAME = "Алина";
-const EXPERT_TAGLINE = "Эксперт в сфере красоты и ухода за кожей";
-const EXPERT_INTRO =
-  "Я создаю обучающие программы и делюсь знаниями, которые помогают женщинам быть уверенными и ухоженными каждый день.";
 
 export default function HeroSection() {
   return (
@@ -19,18 +14,20 @@ export default function HeroSection() {
             Привет! <span className="inline-block">👋</span>
           </p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight text-ink">
-            Я — {EXPERT_NAME}
+            Клуб «Красота без рабства»
           </h1>
-          <p className="mt-2 text-sm font-medium text-beige-dark">{EXPERT_TAGLINE}</p>
-          <p className="mt-3 text-sm leading-relaxed text-ink-soft max-w-[85%]">
-            {EXPERT_INTRO}
+          <p className="mt-2 text-sm font-medium text-beige-dark">Формула ухоженности 35+</p>
+          <p className="mt-3 text-sm leading-relaxed text-ink-soft max-w-[90%]">
+            Спокойная и реалистичная система ухода для женщин 35+: кожа, волосы, энергия,
+            привычки и поддержка специалиста. Не нужно быть идеальной — начнём с одного
+            понятного шага.
           </p>
         </div>
 
         <div className="relative mt-5 h-56 w-full">
           <Image
             src="/images/expert.webp"
-            alt={EXPERT_NAME}
+            alt="Эксперт клуба"
             fill
             priority
             sizes="(max-width: 480px) 100vw, 480px"
@@ -40,14 +37,24 @@ export default function HeroSection() {
         </div>
       </div>
 
-      <Link
-        href="/courses"
-        onClick={() => hapticImpact("light")}
-        className="tap-scale mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white shadow-button"
-      >
-        Смотреть курсы
-        <ArrowRight className="w-5 h-5" strokeWidth={2} />
-      </Link>
+      <div className="mt-4 flex flex-col gap-2.5">
+        <Link
+          href="/diagnosis"
+          onClick={() => hapticImpact("light")}
+          className="tap-scale flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white shadow-button"
+        >
+          <Sparkles className="w-5 h-5" strokeWidth={2} />
+          Пройти мини-диагностику
+        </Link>
+        <Link
+          href="/tariffs"
+          onClick={() => hapticImpact("light")}
+          className="tap-scale flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-4 text-base font-semibold text-ink shadow-card"
+        >
+          Посмотреть тарифы
+          <ArrowRight className="w-5 h-5" strokeWidth={2} />
+        </Link>
+      </div>
     </section>
   );
 }

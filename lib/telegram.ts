@@ -23,6 +23,7 @@ export interface TelegramWebApp {
   colorScheme?: "light" | "dark";
   viewportHeight?: number;
   viewportStableHeight?: number;
+  initData?: string;
   initDataUnsafe?: {
     user?: TelegramWebAppUser;
   };

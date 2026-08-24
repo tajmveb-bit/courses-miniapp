@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { sendTelegramMessage } from "@/lib/notifyAdmin";
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
@@ -25,6 +26,12 @@ export async function POST(req: NextRequest) {
 
   const update: TelegramUpdate = await req.json();
   const chatId = update.message?.chat.id;
+  const text = update.message?.text?.trim();
+
+  if (chatId && text === "/id") {
+    await sendTelegramMessage(chatId, `ID этого чата: ${chatId}`);
+    return NextResponse.json({ ok: true });
+  }
 
   if (chatId) {
     await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -32,9 +39,9 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         chat_id: chatId,
-        text: "Привет! 👋 Здесь можно посмотреть курсы по уходу за кожей и косметике.",
+        text: "Добро пожаловать в клуб «Красота без рабства» 👋\n\nЗдесь — спокойная система ухода за кожей и волосами для женщин 35+.",
         reply_markup: {
-          inline_keyboard: [[{ text: "Открыть приложение", web_app: { url: APP_URL } }]],
+          inline_keyboard: [[{ text: "Открыть клуб", web_app: { url: APP_URL } }]],
         },
       }),
     });

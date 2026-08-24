@@ -2,20 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, BookOpen, User } from "lucide-react";
+import { Home, BookOpen, MessageCircleQuestion, Grid2x2 } from "lucide-react";
 import { hapticSelection } from "@/lib/telegram";
 
 const NAV_ITEMS = [
   { href: "/", label: "Главная", icon: Home },
-  { href: "/courses", label: "Курсы", icon: BookOpen },
-  { href: "/about", label: "Обо мне", icon: User },
+  { href: "/materials", label: "Материалы", icon: BookOpen },
+  { href: "/ask", label: "Вопрос", icon: MessageCircleQuestion },
+  { href: "/more", label: "Ещё", icon: Grid2x2 },
 ] as const;
+
+const HIDDEN_ON = [/^\/materials\/[^/]+/];
 
 export default function BottomNavigation() {
   const pathname = usePathname();
 
-  const isCourseDetail = /^\/courses\/[^/]+/.test(pathname ?? "");
-  if (isCourseDetail) return null;
+  if (HIDDEN_ON.some((pattern) => pattern.test(pathname ?? ""))) return null;
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -34,13 +36,9 @@ export default function BottomNavigation() {
               onClick={() => hapticSelection()}
               className="relative flex flex-col items-center justify-center gap-1 rounded-3xl px-5 py-2 tap-scale"
             >
-              {active && (
-                <span className="absolute inset-0 rounded-3xl bg-beige-light animate-scale-in" />
-              )}
+              {active && <span className="absolute inset-0 rounded-3xl bg-beige-light animate-scale-in" />}
               <Icon
-                className={`relative w-5 h-5 transition-colors ${
-                  active ? "text-beige-dark" : "text-ink-soft"
-                }`}
+                className={`relative w-5 h-5 transition-colors ${active ? "text-beige-dark" : "text-ink-soft"}`}
                 strokeWidth={active ? 2.1 : 1.8}
               />
               <span
