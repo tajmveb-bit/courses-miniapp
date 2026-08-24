@@ -2,7 +2,7 @@ import Image from "next/image";
 import SocialLinks from "@/components/SocialLinks";
 import BackButton from "@/components/BackButton";
 
-const EXPERT_NAME = "Алина";
+const EXPERT_NAME = "Анастасия";
 const EXPERT_TAGLINE = "Косметолог, владелица салона красоты, автор клуба «Красота без рабства»";
 
 export default function AboutPage() {
