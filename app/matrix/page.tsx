@@ -40,7 +40,11 @@ export default function MatrixPage() {
 
   useEffect(() => {
     const saved = getSavedBirthDate();
-    if (saved) setDateInput(saved);
+    if (saved) {
+      setDateInput(saved);
+      const calculated = calculateMatrix(saved);
+      if (calculated) setResult(calculated);
+    }
   }, []);
 
   const handleCalculate = () => {

@@ -14,7 +14,7 @@ interface UnlockGateProps {
 
 export default function UnlockGate({
   title = "Полный разбор",
-  price = "4 990 ₽",
+  price = "15 000 ₸",
   children,
 }: UnlockGateProps) {
   const { unlocked, checking, error, tryUnlock } = useMatrixUnlock();
