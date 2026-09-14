@@ -225,6 +225,19 @@ export default function MatrixPage() {
                 <ArrowRight className="w-4 h-4 text-beige-dark" strokeWidth={2} />
               </span>
             </Link>
+
+            <Link
+              href="/matrix/compatibility"
+              className="tap-scale flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card"
+            >
+              <div>
+                <p className="text-sm font-semibold text-ink">Совместимость</p>
+                <p className="mt-0.5 text-xs text-ink-soft">Расчёт для двух партнёров</p>
+              </div>
+              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-beige-light">
+                <ArrowRight className="w-4 h-4 text-beige-dark" strokeWidth={2} />
+              </span>
+            </Link>
           </div>
         </>
       )}
