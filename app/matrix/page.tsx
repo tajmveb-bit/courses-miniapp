@@ -173,7 +173,7 @@ export default function MatrixPage() {
             </div>
           </div>
 
-          <div className="px-5 mt-6 animate-fade-up [animation-delay:280ms] opacity-0">
+          <div className="px-5 mt-6 flex flex-col gap-3 animate-fade-up [animation-delay:280ms] opacity-0">
             <Link
               href="/matrix/karmic-knots"
               className="tap-scale flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card"
@@ -181,6 +181,19 @@ export default function MatrixPage() {
               <div>
                 <p className="text-sm font-semibold text-ink">Кармические узлы</p>
                 <p className="mt-0.5 text-xs text-ink-soft">Справочник комбинаций из 3 арканов</p>
+              </div>
+              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-beige-light">
+                <ArrowRight className="w-4 h-4 text-beige-dark" strokeWidth={2} />
+              </span>
+            </Link>
+
+            <Link
+              href="/matrix/spiritual-sphere"
+              className="tap-scale flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card"
+            >
+              <div>
+                <p className="text-sm font-semibold text-ink">Сфера духовности</p>
+                <p className="mt-0.5 text-xs text-ink-soft">Задача по месяцу рождения и энергии</p>
               </div>
               <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-beige-light">
                 <ArrowRight className="w-4 h-4 text-beige-dark" strokeWidth={2} />
