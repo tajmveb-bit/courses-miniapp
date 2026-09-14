@@ -47,25 +47,25 @@ export default function EnergySheet({ energy, onClose }: EnergySheetProps) {
               </p>
               <h3 className="mt-1 text-2xl font-semibold text-ink">{energy.name}</h3>
 
-              <p className="mt-5 text-sm font-semibold text-ink">Плюсовые проявления</p>
-              <ul className="mt-2 flex flex-col gap-1.5">
-                {energy.positive.map((item, i) => (
-                  <li key={i} className="flex gap-2 text-sm leading-relaxed text-ink-soft">
-                    <span className="text-beige-dark">•</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+              <p className="mt-5 text-sm font-semibold text-ink">Таланты</p>
+              <p className="mt-2 text-sm leading-relaxed text-ink-soft">{energy.talents}</p>
 
-              <p className="mt-5 text-sm font-semibold text-ink">Минусовые проявления</p>
-              <ul className="mt-2 flex flex-col gap-1.5">
-                {energy.negative.map((item, i) => (
-                  <li key={i} className="flex gap-2 text-sm leading-relaxed text-ink-soft">
-                    <span className="text-beige-dark">•</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+              <p className="mt-5 text-sm font-semibold text-ink">Прошлая жизнь</p>
+              <p className="mt-2 text-sm leading-relaxed text-ink-soft">{energy.pastLife}</p>
+
+              {energy.steps.length > 0 && (
+                <>
+                  <p className="mt-5 text-sm font-semibold text-ink">Как пройти программу</p>
+                  <ul className="mt-2 flex flex-col gap-1.5">
+                    {energy.steps.map((item, i) => (
+                      <li key={i} className="flex gap-2 text-sm leading-relaxed text-ink-soft">
+                        <span className="text-beige-dark">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </div>
           </motion.div>
         </div>

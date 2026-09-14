@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Sparkles } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import NumberBadge from "@/components/matrix/NumberBadge";
+import StarChart from "@/components/matrix/StarChart";
 import EnergySheet from "@/components/matrix/EnergySheet";
 import FatalMistakeSheet from "@/components/matrix/FatalMistakeSheet";
 import { calculateMatrix, type MatrixResult } from "@/lib/matrix";
@@ -98,7 +99,17 @@ export default function MatrixPage() {
             </button>
           </div>
 
-          <div className="px-5 mt-4 animate-fade-up [animation-delay:140ms] opacity-0">
+          <div className="px-5 mt-6 animate-fade-up [animation-delay:120ms] opacity-0">
+            <h2 className="text-lg font-semibold text-ink mb-3">Звезда</h2>
+            <div className="rounded-4xl bg-white shadow-soft p-5">
+              <StarChart result={result} onSelectPoint={(value) => setSelectedEnergyId(value)} />
+              <p className="mt-4 text-center text-xs text-ink-soft">
+                Нажмите на любую цифру, чтобы узнать её значение
+              </p>
+            </div>
+          </div>
+
+          <div className="px-5 mt-6 animate-fade-up [animation-delay:140ms] opacity-0">
             <h2 className="text-lg font-semibold text-ink mb-3">5 предназначений</h2>
             <div className="grid grid-cols-2 gap-3">
               {DESTINY_LABELS.map(({ key, label }) => {
