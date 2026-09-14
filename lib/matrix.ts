@@ -108,35 +108,42 @@ export function calculateMatrix(dateStr: string): MatrixResult | null {
   };
 }
 
-/** Позиции 27 точек звезды в процентах (left, top) — соответствуют оригинальной раскладке. */
+/**
+ * Позиции 27 точек звезды в процентах (left, top).
+ * Форма повторяет оригинальную раскладку сайта, но 5 вершин большой пентаграммы выровнены
+ * в точный правильный пятиугольник (равные радиусы и углы от центра) — в исходных координатах
+ * они были немного неровными, из-за чего звезда визуально смотрелась "кривой". Остальные точки
+ * пересчитаны той же трансформацией (поворот/масштаб/сдвиг), чтобы сохранить их положение
+ * относительно звезды.
+ */
 export const STAR_POINT_POSITIONS: Record<number, { left: number; top: number; size: "lg" | "md" | "sm" }> = {
-  1: { left: 46.8, top: 12, size: "lg" },
-  2: { left: 82, top: 39, size: "lg" },
-  3: { left: 66, top: 76, size: "lg" },
-  4: { left: 26, top: 76.1, size: "lg" },
-  5: { left: 13, top: 39, size: "lg" },
-  6: { left: 46.4, top: 49.6, size: "md" },
-  7: { left: 28.5, top: 38, size: "md" },
-  8: { left: 37.5, top: 38, size: "md" },
-  9: { left: 46.5, top: 38, size: "md" },
-  10: { left: 55.5, top: 38, size: "md" },
-  11: { left: 65, top: 38, size: "md" },
-  12: { left: 41.1, top: 49.3, size: "sm" },
-  13: { left: 47.9, top: 44.1, size: "sm" },
-  14: { left: 54.6, top: 49.3, size: "sm" },
-  15: { left: 43.5, top: 56.5, size: "sm" },
-  16: { left: 52, top: 56.7, size: "sm" },
-  17: { left: 39, top: 30, size: "sm" },
-  18: { left: 55.8, top: 30, size: "sm" },
-  19: { left: 30.6, top: 56.8, size: "sm" },
-  20: { left: 64.8, top: 56.8, size: "sm" },
-  21: { left: 47.5, top: 68.7, size: "sm" },
-  22: { left: 26.4, top: 52, size: "sm" },
-  23: { left: 29.5, top: 64, size: "sm" },
-  24: { left: 40.8, top: 72.8, size: "sm" },
-  25: { left: 54.7, top: 72.8, size: "sm" },
-  26: { left: 65.8, top: 64, size: "sm" },
-  27: { left: 71.2, top: 52.4, size: "sm" },
+  1: { left: 50, top: 15, size: "lg" },
+  2: { left: 83.3, top: 39.2, size: "lg" },
+  3: { left: 70.6, top: 78.3, size: "lg" },
+  4: { left: 29.4, top: 78.3, size: "lg" },
+  5: { left: 16.7, top: 39.2, size: "lg" },
+  6: { left: 49.7, top: 51.2, size: "md" },
+  7: { left: 31.8, top: 39.8, size: "md" },
+  8: { left: 40.7, top: 39.8, size: "md" },
+  9: { left: 49.6, top: 39.7, size: "md" },
+  10: { left: 58.6, top: 39.6, size: "md" },
+  11: { left: 68, top: 39.5, size: "md" },
+  12: { left: 44.4, top: 50.9, size: "sm" },
+  13: { left: 51.1, top: 45.7, size: "sm" },
+  14: { left: 57.8, top: 50.8, size: "sm" },
+  15: { left: 46.8, top: 58, size: "sm" },
+  16: { left: 55.3, top: 58.2, size: "sm" },
+  17: { left: 42.1, top: 31.8, size: "sm" },
+  18: { left: 58.8, top: 31.6, size: "sm" },
+  19: { left: 34.1, top: 58.5, size: "sm" },
+  20: { left: 68, top: 58.1, size: "sm" },
+  21: { left: 50.9, top: 70.1, size: "sm" },
+  22: { left: 29.8, top: 53.7, size: "sm" },
+  23: { left: 33, top: 65.6, size: "sm" },
+  24: { left: 44.3, top: 74.2, size: "sm" },
+  25: { left: 58.1, top: 74.1, size: "sm" },
+  26: { left: 69, top: 65.3, size: "sm" },
+  27: { left: 74.3, top: 53.7, size: "sm" },
 };
 
 /** Порядок вершин большой пентаграммы (1→3→5→2→4→1) — образует классическую 5-конечную звезду. */

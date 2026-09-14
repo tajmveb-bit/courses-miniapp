@@ -10,9 +10,9 @@ interface StarChartProps {
 }
 
 const SIZE_CLASSES: Record<"lg" | "md" | "sm", string> = {
-  lg: "w-10 h-10 text-sm",
-  md: "w-6 h-6 text-[11px]",
-  sm: "w-4 h-4 text-[9px]",
+  lg: "w-9 h-9 text-sm",
+  md: "w-5 h-5 text-[10px]",
+  sm: "w-[14px] h-[14px] text-[8px]",
 };
 
 // Общий shadow-button (большой блюр под отдельно стоящие CTA-кнопки) на плотном скоплении
@@ -52,12 +52,12 @@ function getBadgeDelay(id: number): number {
   return SM_START + SM_IDS.indexOf(id) * SM_STEP;
 }
 
-// Радиусы бейджей в px — должны совпадать с SIZE_CLASSES выше (w-10/6/4 => 20/12/8).
-const RADIUS_PX: Record<"lg" | "md" | "sm", number> = { lg: 20, md: 12, sm: 8 };
+// Радиусы бейджей в px — должны совпадать с SIZE_CLASSES выше (w-9/5/[14px] => 18/10/7).
+const RADIUS_PX: Record<"lg" | "md" | "sm", number> = { lg: 18, md: 10, sm: 7 };
 // Условная ширина карты в px для расчёта пересечений — берём с запасом под узкие телефоны,
 // чтобы бейджи гарантированно не слипались даже на маленьком экране.
 const LAYOUT_REF_PX = 335;
-const BADGE_PADDING_PX = 4;
+const BADGE_PADDING_PX = 3;
 
 // Раскладка карты повторяет форму звезды с сайта — сдвигать точки целиком нельзя (собьётся форма).
 // Поэтому здесь не радиальный сдвиг от центра, а точечное раздвижение конфликтующих бейджей:

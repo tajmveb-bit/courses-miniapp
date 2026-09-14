@@ -58,12 +58,12 @@ export default function UnlockGate({
             value={code}
             onChange={(e) => setCode(e.target.value)}
             placeholder="Код доступа"
-            className="flex-1 rounded-2xl border border-black/10 bg-cream px-4 py-3 text-sm text-ink text-center tracking-wide outline-none focus:border-beige-dark"
+            className="w-0 flex-1 min-w-0 rounded-2xl border border-black/10 bg-cream px-4 py-3 text-base text-ink text-center tracking-wide outline-none focus:border-beige-dark"
           />
           <button
             type="submit"
             disabled={checking || code.trim().length === 0}
-            className="tap-scale flex-shrink-0 rounded-2xl bg-beige-light px-5 py-3 text-sm font-semibold text-beige-dark disabled:opacity-40"
+            className="tap-scale flex-shrink-0 rounded-2xl bg-beige-light px-4 py-3 text-sm font-semibold text-beige-dark disabled:opacity-40"
           >
             {checking ? "..." : "Ввести"}
           </button>
