@@ -26,3 +26,4 @@ next-env.d.ts
 
 # reference materials (not part of the app)
 *.docx
+screenshots/
