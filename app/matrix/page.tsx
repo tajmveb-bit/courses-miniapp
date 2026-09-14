@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles } from "lucide-react";
+import Link from "next/link";
+import { Sparkles, ArrowRight } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import NumberBadge from "@/components/matrix/NumberBadge";
 import StarChart from "@/components/matrix/StarChart";
@@ -170,6 +171,21 @@ export default function MatrixPage() {
                 <NumberBadge key={i} value={value} size="md" onClick={() => setSelectedEnergyId(value)} />
               ))}
             </div>
+          </div>
+
+          <div className="px-5 mt-6 animate-fade-up [animation-delay:280ms] opacity-0">
+            <Link
+              href="/matrix/karmic-knots"
+              className="tap-scale flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card"
+            >
+              <div>
+                <p className="text-sm font-semibold text-ink">Кармические узлы</p>
+                <p className="mt-0.5 text-xs text-ink-soft">Справочник комбинаций из 3 арканов</p>
+              </div>
+              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-beige-light">
+                <ArrowRight className="w-4 h-4 text-beige-dark" strokeWidth={2} />
+              </span>
+            </Link>
           </div>
         </>
       )}
