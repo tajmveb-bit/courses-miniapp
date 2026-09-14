@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import NumberBadge from "@/components/matrix/NumberBadge";
+import DateInput from "@/components/matrix/DateInput";
 import UnlockGate from "@/components/matrix/UnlockGate";
 import EnergyGraphChart from "@/components/matrix/EnergyGraphChart";
 import ForecastEventSheet from "@/components/matrix/ForecastEventSheet";
@@ -11,14 +12,8 @@ import { parseBirthDate } from "@/lib/matrix";
 import { calculateForecast, calculateEnergyCode, MONTH_NAMES, type ForecastResult } from "@/lib/forecast";
 import { getForecastEvent } from "@/data/matrixForecastEvents";
 import { getEnergyGraphLevel } from "@/data/matrixEnergyGraph";
+import { getSavedBirthDate, saveBirthDate } from "@/lib/dateInput";
 import { hapticImpact, hapticSelection } from "@/lib/telegram";
-
-function formatDateInput(raw: string): string {
-  let value = raw.replace(/\D/g, "");
-  if (value.length >= 2) value = value.slice(0, 2) + "." + value.slice(2);
-  if (value.length >= 5) value = value.slice(0, 5) + "." + value.slice(5);
-  return value.slice(0, 10);
-}
 
 const now = new Date();
 
@@ -32,6 +27,11 @@ export default function ForecastPage() {
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
   const [graphValue, setGraphValue] = useState<number | null>(null);
 
+  useEffect(() => {
+    const saved = getSavedBirthDate();
+    if (saved) setDateInput(saved);
+  }, []);
+
   const parsedBirth = parseBirthDate(dateInput);
 
   const handleCalculate = () => {
@@ -40,6 +40,7 @@ export default function ForecastPage() {
     const forecast = calculateForecast(parsedBirth.day, parsedBirth.month, targetYear, targetMonth, targetDay);
     setResult(forecast);
     setEnergyDigits(calculateEnergyCode(parsedBirth.day, parsedBirth.month, Number(parsedBirth.year)));
+    saveBirthDate(dateInput);
   };
 
   const selectedEvent = selectedEventId ? getForecastEvent(selectedEventId) ?? null : null;
@@ -57,13 +58,7 @@ export default function ForecastPage() {
           <p className="text-sm leading-relaxed text-ink-soft mb-4">
             Введите дату рождения и день, на который хотите узнать прогноз.
           </p>
-          <input
-            value={dateInput}
-            onChange={(e) => setDateInput(formatDateInput(e.target.value))}
-            placeholder="Дата рождения: дд.мм.гггг"
-            inputMode="numeric"
-            className="w-full rounded-2xl border border-black/10 bg-cream px-4 py-3 text-base text-ink text-center tracking-wide outline-none focus:border-beige-dark"
-          />
+          <DateInput value={dateInput} onChange={setDateInput} placeholder="Дата рождения: дд.мм.гггг" />
 
           <div className="mt-3 grid grid-cols-3 gap-2">
             <input

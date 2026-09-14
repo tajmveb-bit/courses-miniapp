@@ -1,17 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Sparkles, ArrowRight } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import NumberBadge from "@/components/matrix/NumberBadge";
 import StarChart from "@/components/matrix/StarChart";
+import DateInput from "@/components/matrix/DateInput";
 import EnergySheet from "@/components/matrix/EnergySheet";
 import FatalMistakeSheet from "@/components/matrix/FatalMistakeSheet";
 import AncestralErrorSheet from "@/components/matrix/AncestralErrorSheet";
 import { calculateMatrix, type MatrixResult } from "@/lib/matrix";
 import { getArcanaEnergy, getFatalMistake } from "@/data/matrixArcana";
 import { getAncestralError } from "@/data/matrixAncestralErrors";
+import { getSavedBirthDate, saveBirthDate } from "@/lib/dateInput";
 import { hapticImpact, hapticSelection } from "@/lib/telegram";
 
 const ANCESTRAL_LABELS: { label: string; point: number }[] = [
@@ -29,13 +31,6 @@ const DESTINY_LABELS: { key: keyof MatrixResult["destinies"]; label: string }[] 
   { key: "health", label: "Здоровье" },
 ];
 
-function formatDateInput(raw: string): string {
-  let value = raw.replace(/\D/g, "");
-  if (value.length >= 2) value = value.slice(0, 2) + "." + value.slice(2);
-  if (value.length >= 5) value = value.slice(0, 5) + "." + value.slice(5);
-  return value.slice(0, 10);
-}
-
 export default function MatrixPage() {
   const [dateInput, setDateInput] = useState("");
   const [result, setResult] = useState<MatrixResult | null>(null);
@@ -43,11 +38,17 @@ export default function MatrixPage() {
   const [showFatalMistake, setShowFatalMistake] = useState(false);
   const [ancestralLabel, setAncestralLabel] = useState<string | null>(null);
 
+  useEffect(() => {
+    const saved = getSavedBirthDate();
+    if (saved) setDateInput(saved);
+  }, []);
+
   const handleCalculate = () => {
     const calculated = calculateMatrix(dateInput);
     if (!calculated) return;
     hapticImpact("medium");
     setResult(calculated);
+    saveBirthDate(dateInput);
   };
 
   const selectedEnergy = selectedEnergyId ? getArcanaEnergy(selectedEnergyId) ?? null : null;
@@ -76,13 +77,7 @@ export default function MatrixPage() {
             роковую ошибку, чакры и код души.
           </p>
           <div className="mt-4 flex items-center gap-3">
-            <input
-              value={dateInput}
-              onChange={(e) => setDateInput(formatDateInput(e.target.value))}
-              placeholder="дд.мм.гггг"
-              inputMode="numeric"
-              className="flex-1 rounded-2xl border border-black/10 bg-cream px-4 py-3 text-lg text-ink text-center tracking-wide outline-none focus:border-beige-dark"
-            />
+            <DateInput value={dateInput} onChange={setDateInput} />
           </div>
           <button
             type="button"

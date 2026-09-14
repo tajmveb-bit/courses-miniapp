@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import BackButton from "@/components/BackButton";
+import DateInput from "@/components/matrix/DateInput";
 import TextDetailSheet from "@/components/matrix/TextDetailSheet";
 import { parseBirthDate } from "@/lib/matrix";
 import {
@@ -19,14 +20,8 @@ import {
   getBusinessCompatibility,
   getLifePathCompatibility,
 } from "@/data/matrixCompatibility";
+import { getSavedBirthDate, saveBirthDate } from "@/lib/dateInput";
 import { hapticImpact, hapticSelection } from "@/lib/telegram";
-
-function formatDateInput(raw: string): string {
-  let value = raw.replace(/\D/g, "");
-  if (value.length >= 2) value = value.slice(0, 2) + "." + value.slice(2);
-  if (value.length >= 5) value = value.slice(0, 5) + "." + value.slice(5);
-  return value.slice(0, 10);
-}
 
 interface SheetData {
   eyebrow: string;
@@ -44,6 +39,11 @@ export default function CompatibilityPage() {
   const [lifePath, setLifePath] = useState<CompatibilityResult | null>(null);
   const [sheet, setSheet] = useState<SheetData | null>(null);
 
+  useEffect(() => {
+    const saved = getSavedBirthDate();
+    if (saved) setDateA(saved);
+  }, []);
+
   const parsedA = parseBirthDate(dateA);
   const parsedB = parseBirthDate(dateB);
 
@@ -56,6 +56,7 @@ export default function CompatibilityPage() {
     setConflict(conflictArcana(a, b));
     setBusiness(businessArcana(a, b));
     setLifePath(calculateCompatibilityNumber(a, b));
+    saveBirthDate(dateA);
   };
 
   const openMeeting = () => {
@@ -100,20 +101,8 @@ export default function CompatibilityPage() {
             конфликты, деловую совместимость и тип отношений.
           </p>
           <div className="flex flex-col gap-3">
-            <input
-              value={dateA}
-              onChange={(e) => setDateA(formatDateInput(e.target.value))}
-              placeholder="Партнёр 1: дд.мм.гггг"
-              inputMode="numeric"
-              className="w-full rounded-2xl border border-black/10 bg-cream px-4 py-3 text-base text-ink text-center tracking-wide outline-none focus:border-beige-dark"
-            />
-            <input
-              value={dateB}
-              onChange={(e) => setDateB(formatDateInput(e.target.value))}
-              placeholder="Партнёр 2: дд.мм.гггг"
-              inputMode="numeric"
-              className="w-full rounded-2xl border border-black/10 bg-cream px-4 py-3 text-base text-ink text-center tracking-wide outline-none focus:border-beige-dark"
-            />
+            <DateInput value={dateA} onChange={setDateA} placeholder="Партнёр 1: дд.мм.гггг" />
+            <DateInput value={dateB} onChange={setDateB} placeholder="Партнёр 2: дд.мм.гггг" />
           </div>
           <button
             type="button"
