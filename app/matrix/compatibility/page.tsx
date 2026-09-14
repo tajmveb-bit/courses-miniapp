@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import DateInput from "@/components/matrix/DateInput";
+import UnlockGate from "@/components/matrix/UnlockGate";
 import TextDetailSheet from "@/components/matrix/TextDetailSheet";
 import { parseBirthDate } from "@/lib/matrix";
 import {
@@ -95,29 +96,29 @@ export default function CompatibilityPage() {
       </div>
 
       <div className="px-5 mt-4 animate-fade-up [animation-delay:60ms] opacity-0">
-        <div className="rounded-4xl bg-white shadow-soft p-6">
-          <p className="text-sm leading-relaxed text-ink-soft mb-4">
-            Введите даты рождения двух партнёров, чтобы узнать причину встречи, возможные
-            конфликты, деловую совместимость и тип отношений.
-          </p>
-          <div className="flex flex-col gap-3">
-            <DateInput value={dateA} onChange={setDateA} placeholder="Партнёр 1: дд.мм.гггг" />
-            <DateInput value={dateB} onChange={setDateB} placeholder="Партнёр 2: дд.мм.гггг" />
+        <UnlockGate title="Совместимость">
+          <div className="rounded-4xl bg-white shadow-soft p-6">
+            <p className="text-sm leading-relaxed text-ink-soft mb-4">
+              Введите даты рождения двух партнёров, чтобы узнать причину встречи, возможные
+              конфликты, деловую совместимость и тип отношений.
+            </p>
+            <div className="flex flex-col gap-3">
+              <DateInput value={dateA} onChange={setDateA} placeholder="Партнёр 1: дд.мм.гггг" />
+              <DateInput value={dateB} onChange={setDateB} placeholder="Партнёр 2: дд.мм.гггг" />
+            </div>
+            <button
+              type="button"
+              disabled={!parsedA || !parsedB}
+              onClick={handleCalculate}
+              className="tap-scale mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white shadow-button disabled:opacity-40"
+            >
+              <Heart className="w-5 h-5" strokeWidth={2} />
+              Рассчитать совместимость
+            </button>
           </div>
-          <button
-            type="button"
-            disabled={!parsedA || !parsedB}
-            onClick={handleCalculate}
-            className="tap-scale mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white shadow-button disabled:opacity-40"
-          >
-            <Heart className="w-5 h-5" strokeWidth={2} />
-            Рассчитать совместимость
-          </button>
-        </div>
-      </div>
 
-      {meeting !== null && conflict !== null && business !== null && lifePath && (
-        <div className="px-5 mt-6 flex flex-col gap-3 animate-fade-up [animation-delay:100ms] opacity-0">
+          {meeting !== null && conflict !== null && business !== null && lifePath && (
+          <div className="mt-6 flex flex-col gap-3">
           <button
             type="button"
             onClick={openMeeting}
@@ -173,8 +174,10 @@ export default function CompatibilityPage() {
               <p className="mt-0.5 text-xs text-ink-soft">{getLifePathCompatibility(lifePath.compatibilityNumber)?.name}</p>
             </div>
           </button>
-        </div>
-      )}
+          </div>
+          )}
+        </UnlockGate>
+      </div>
 
       <TextDetailSheet data={sheet} onClose={() => setSheet(null)} />
     </main>
