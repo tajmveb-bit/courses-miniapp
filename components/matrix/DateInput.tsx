@@ -13,6 +13,7 @@ export default function DateInput({ value, onChange, placeholder = "дд.мм.г
     <input
       value={value}
       onChange={(e) => onChange(formatDateInput(e.target.value))}
+      onFocus={(e) => e.target.select()}
       placeholder={placeholder}
       inputMode="numeric"
       className="w-full rounded-2xl border border-black/10 bg-cream px-4 py-3 text-base text-ink text-center tracking-wide outline-none focus:border-beige-dark"
