@@ -8,9 +8,18 @@ import NumberBadge from "@/components/matrix/NumberBadge";
 import StarChart from "@/components/matrix/StarChart";
 import EnergySheet from "@/components/matrix/EnergySheet";
 import FatalMistakeSheet from "@/components/matrix/FatalMistakeSheet";
+import AncestralErrorSheet from "@/components/matrix/AncestralErrorSheet";
 import { calculateMatrix, type MatrixResult } from "@/lib/matrix";
 import { getArcanaEnergy, getFatalMistake } from "@/data/matrixArcana";
-import { hapticImpact } from "@/lib/telegram";
+import { getAncestralError } from "@/data/matrixAncestralErrors";
+import { hapticImpact, hapticSelection } from "@/lib/telegram";
+
+const ANCESTRAL_LABELS: { label: string; point: number }[] = [
+  { label: "Ошибка отца по мужской линии", point: 8 },
+  { label: "Ошибка матери по мужской линии", point: 10 },
+  { label: "Ошибка отца по женской линии", point: 20 },
+  { label: "Ошибка матери по женской линии", point: 19 },
+];
 
 const DESTINY_LABELS: { key: keyof MatrixResult["destinies"]; label: string }[] = [
   { key: "personal", label: "Личность" },
@@ -32,6 +41,7 @@ export default function MatrixPage() {
   const [result, setResult] = useState<MatrixResult | null>(null);
   const [selectedEnergyId, setSelectedEnergyId] = useState<number | null>(null);
   const [showFatalMistake, setShowFatalMistake] = useState(false);
+  const [ancestralLabel, setAncestralLabel] = useState<string | null>(null);
 
   const handleCalculate = () => {
     const calculated = calculateMatrix(dateInput);
@@ -42,6 +52,15 @@ export default function MatrixPage() {
 
   const selectedEnergy = selectedEnergyId ? getArcanaEnergy(selectedEnergyId) ?? null : null;
   const fatalMistakeEntry = result ? getFatalMistake(result.fatalMistake) ?? null : null;
+  const ancestralSheetData =
+    result && ancestralLabel
+      ? (() => {
+          const item = ANCESTRAL_LABELS.find((a) => a.label === ancestralLabel);
+          if (!item) return null;
+          const error = getAncestralError(result.points[item.point]);
+          return error ? { label: item.label, error } : null;
+        })()
+      : null;
 
   return (
     <main className="pt-safe-t pb-10">
@@ -155,6 +174,36 @@ export default function MatrixPage() {
             </button>
           </div>
 
+          <div className="px-5 mt-6 animate-fade-up [animation-delay:200ms] opacity-0">
+            <h2 className="text-lg font-semibold text-ink mb-3">Родовые ошибки</h2>
+            <div className="grid grid-cols-2 gap-3">
+              {ANCESTRAL_LABELS.map(({ label, point }) => {
+                const value = result.points[point];
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => {
+                      hapticSelection();
+                      setAncestralLabel(label);
+                    }}
+                    className="tap-scale flex items-center gap-3 rounded-3xl bg-white p-4 shadow-card text-left"
+                  >
+                    <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-beige-light text-base font-semibold text-beige-dark">
+                      {value}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-xs text-ink-soft leading-tight">{label}</p>
+                      <p className="text-sm font-semibold text-ink truncate">
+                        {getAncestralError(value)?.name}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="px-5 mt-6 animate-fade-up [animation-delay:220ms] opacity-0">
             <h2 className="text-lg font-semibold text-ink mb-3">Чакры</h2>
             <div className="rounded-3xl bg-white p-4 shadow-card flex justify-between flex-wrap gap-y-3">
@@ -244,6 +293,7 @@ export default function MatrixPage() {
 
       <EnergySheet energy={selectedEnergy} onClose={() => setSelectedEnergyId(null)} />
       <FatalMistakeSheet entry={showFatalMistake ? fatalMistakeEntry : null} onClose={() => setShowFatalMistake(false)} />
+      <AncestralErrorSheet data={ancestralSheetData} onClose={() => setAncestralLabel(null)} />
     </main>
   );
 }
