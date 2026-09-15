@@ -37,14 +37,19 @@ export default function ForecastPage() {
 
   useEffect(() => {
     const saved = getSavedBirthDate();
-    if (saved) {
-      setDateInput(saved);
-      runCalculate(saved, targetYear, targetMonth, targetDay);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (saved) setDateInput(saved);
   }, []);
 
   const parsedBirth = parseBirthDate(dateInput);
+
+  // Recalculate as soon as a full birth date is present, so typing a new one over an old one
+  // updates the forecast immediately without requiring a separate button press.
+  useEffect(() => {
+    if (!parsedBirth) return;
+    runCalculate(dateInput, targetYear, targetMonth, targetDay);
+    saveBirthDate(dateInput);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dateInput]);
 
   const handleCalculate = () => {
     if (!parsedBirth) return;

@@ -48,6 +48,20 @@ export default function CompatibilityPage() {
   const parsedA = parseBirthDate(dateA);
   const parsedB = parseBirthDate(dateB);
 
+  // Recalculate as soon as both dates are complete, so editing either one updates the result
+  // immediately without requiring a separate button press.
+  useEffect(() => {
+    if (!parsedA || !parsedB) return;
+    const a: PersonDate = parsedA;
+    const b: PersonDate = parsedB;
+    setMeeting(meetingArcana(a, b));
+    setConflict(conflictArcana(a, b));
+    setBusiness(businessArcana(a, b));
+    setLifePath(calculateCompatibilityNumber(a, b));
+    saveBirthDate(dateA);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dateA, dateB]);
+
   const handleCalculate = () => {
     if (!parsedA || !parsedB) return;
     hapticImpact("medium");

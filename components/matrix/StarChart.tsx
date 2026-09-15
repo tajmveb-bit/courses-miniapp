@@ -12,7 +12,7 @@ interface StarChartProps {
 const SIZE_CLASSES: Record<"lg" | "md" | "sm", string> = {
   lg: "w-9 h-9 text-sm",
   md: "w-5 h-5 text-[10px]",
-  sm: "w-[14px] h-[14px] text-[8px]",
+  sm: "w-2.5 h-2.5",
 };
 
 // Общий shadow-button (большой блюр под отдельно стоящие CTA-кнопки) на плотном скоплении
@@ -21,7 +21,7 @@ const SIZE_CLASSES: Record<"lg" | "md" | "sm", string> = {
 const SHADOW_CLASSES: Record<"lg" | "md" | "sm", string> = {
   lg: "shadow-button",
   md: "shadow-[0_3px_8px_rgba(201,167,126,0.3)]",
-  sm: "shadow-[0_2px_4px_rgba(201,167,126,0.25)]",
+  sm: "shadow-[0_1px_3px_rgba(201,167,126,0.25)]",
 };
 
 const CIRCLE_DURATION = 1.1;
@@ -52,8 +52,8 @@ function getBadgeDelay(id: number): number {
   return SM_START + SM_IDS.indexOf(id) * SM_STEP;
 }
 
-// Радиусы бейджей в px — должны совпадать с SIZE_CLASSES выше (w-9/5/[14px] => 18/10/7).
-const RADIUS_PX: Record<"lg" | "md" | "sm", number> = { lg: 18, md: 10, sm: 7 };
+// Радиусы бейджей в px — должны совпадать с SIZE_CLASSES выше (w-9/5/2.5 => 18/10/5).
+const RADIUS_PX: Record<"lg" | "md" | "sm", number> = { lg: 18, md: 10, sm: 5 };
 // Условная ширина карты в px для расчёта пересечений — берём с запасом под узкие телефоны,
 // чтобы бейджи гарантированно не слипались даже на маленьком экране.
 const LAYOUT_REF_PX = 335;
@@ -166,13 +166,14 @@ export default function StarChart({ result, onSelectPoint }: StarChartProps) {
             initial={{ opacity: 0, scale: 0.3 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.35, delay: getBadgeDelay(id), ease: "backOut" }}
+            aria-label={`${value}`}
             className={`tap-scale absolute -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center rounded-full font-semibold text-white ${
               SIZE_CLASSES[size]
             } ${SHADOW_CLASSES[size]} ${
-              size === "lg" ? "bg-beige-dark" : size === "md" ? "bg-beige-dark/85" : "bg-beige-dark/70"
+              size === "lg" ? "bg-beige-dark" : size === "md" ? "bg-beige-dark/85" : "bg-beige-dark/50"
             }`}
           >
-            {value}
+            {size !== "sm" && value}
           </motion.button>
         );
       })}

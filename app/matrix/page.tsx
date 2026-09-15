@@ -40,12 +40,18 @@ export default function MatrixPage() {
 
   useEffect(() => {
     const saved = getSavedBirthDate();
-    if (saved) {
-      setDateInput(saved);
-      const calculated = calculateMatrix(saved);
-      if (calculated) setResult(calculated);
-    }
+    if (saved) setDateInput(saved);
   }, []);
+
+  // Recalculate as soon as a full date is present, so typing a new date over an old one
+  // updates the results immediately without requiring a separate button press.
+  useEffect(() => {
+    if (dateInput.length !== 10) return;
+    const calculated = calculateMatrix(dateInput);
+    if (!calculated) return;
+    setResult(calculated);
+    saveBirthDate(dateInput);
+  }, [dateInput]);
 
   const handleCalculate = () => {
     const calculated = calculateMatrix(dateInput);
