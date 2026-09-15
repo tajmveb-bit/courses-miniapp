@@ -213,7 +213,6 @@ export default function MatrixPage() {
                     key={label}
                     type="button"
                     onClick={() => {
-                      if (!unlocked) return goToUnlock();
                       hapticSelection();
                       setAncestralLabel(label);
                     }}
@@ -224,13 +223,9 @@ export default function MatrixPage() {
                     </span>
                     <div className="min-w-0">
                       <p className="text-xs text-ink-soft leading-tight">{label}</p>
-                      {unlocked ? (
-                        <p className="text-sm font-semibold text-ink truncate">
-                          {getAncestralError(value)?.name}
-                        </p>
-                      ) : (
-                        <LockedLabel />
-                      )}
+                      <p className="text-sm font-semibold text-ink truncate">
+                        {getAncestralError(value)?.name}
+                      </p>
                     </div>
                   </button>
                 );
@@ -240,24 +235,14 @@ export default function MatrixPage() {
             <h2 className="text-lg font-semibold text-ink mb-3 mt-6">Чакры</h2>
             <div className="rounded-3xl bg-white p-4 shadow-card flex justify-between flex-wrap gap-y-3">
               {result.chakras.map((value, i) => (
-                <NumberBadge
-                  key={i}
-                  value={value}
-                  size="sm"
-                  onClick={() => (unlocked ? setSelectedEnergyId(value) : goToUnlock())}
-                />
+                <NumberBadge key={i} value={value} size="sm" onClick={() => setSelectedEnergyId(value)} />
               ))}
             </div>
 
             <h2 className="text-lg font-semibold text-ink mb-3 mt-6">Код души</h2>
             <div className="rounded-3xl bg-white p-4 shadow-card flex justify-center gap-6">
               {result.soulCode.map((value, i) => (
-                <NumberBadge
-                  key={i}
-                  value={value}
-                  size="md"
-                  onClick={() => (unlocked ? setSelectedEnergyId(value) : goToUnlock())}
-                />
+                <NumberBadge key={i} value={value} size="md" onClick={() => setSelectedEnergyId(value)} />
               ))}
             </div>
 
@@ -353,7 +338,7 @@ export default function MatrixPage() {
             <div ref={unlockCtaRef} className="px-5 mt-6 animate-fade-up [animation-delay:280ms] opacity-0">
               <UnlockGate
                 title="Полный разбор матрицы"
-                description="Расшифровка предназначений, роковой ошибки, родовых ошибок, чакр, кода души и доступ к прогнозу, кармическим узлам, сферам и совместимости"
+                description="Расшифровка 5 предназначений, роковой ошибки и доступ к прогнозу, кармическим узлам, сферам и совместимости"
               />
             </div>
           )}
