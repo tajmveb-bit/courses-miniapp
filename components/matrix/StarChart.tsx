@@ -163,11 +163,11 @@ export default function StarChart({ result, onSelectPoint }: StarChartProps) {
               onSelectPoint(value);
             }}
             style={{ left: `${pos.left}%`, top: `${pos.top}%` }}
-            initial={{ opacity: 0, scale: 0.3 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, scale: 0.3, x: "-50%", y: "-50%" }}
+            animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
             transition={{ duration: 0.35, delay: getBadgeDelay(id), ease: "backOut" }}
             aria-label={`${value}`}
-            className={`tap-scale absolute -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center rounded-full font-semibold text-white ${
+            className={`tap-scale absolute z-10 flex items-center justify-center rounded-full font-semibold text-white ${
               SIZE_CLASSES[size]
             } ${SHADOW_CLASSES[size]} ${
               size === "lg" ? "bg-beige-dark" : size === "md" ? "bg-beige-dark/85" : "bg-beige-dark/50"
