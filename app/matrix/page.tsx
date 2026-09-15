@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight, Lock } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import NumberBadge from "@/components/matrix/NumberBadge";
 import StarChart from "@/components/matrix/StarChart";
@@ -11,11 +11,23 @@ import EnergySheet from "@/components/matrix/EnergySheet";
 import FatalMistakeSheet from "@/components/matrix/FatalMistakeSheet";
 import AncestralErrorSheet from "@/components/matrix/AncestralErrorSheet";
 import UnlockGate from "@/components/matrix/UnlockGate";
+import { useMatrixUnlock } from "@/lib/matrixUnlock";
 import { calculateMatrix, type MatrixResult } from "@/lib/matrix";
 import { getArcanaEnergy, getFatalMistake } from "@/data/matrixArcana";
 import { getAncestralError } from "@/data/matrixAncestralErrors";
 import { getSavedBirthDate, saveBirthDate } from "@/lib/dateInput";
 import { hapticImpact, hapticSelection } from "@/lib/telegram";
+
+// Заблокированные разделы остаются на виду (номер + подпись), но вместо расшифровки — замочек,
+// чтобы было видно, что тут серьёзное содержание, а не просто пустая страница.
+function LockedLabel() {
+  return (
+    <span className="inline-flex items-center gap-1 text-sm font-semibold text-beige-dark/70">
+      <Lock className="w-3.5 h-3.5" strokeWidth={2} />
+      Открыть
+    </span>
+  );
+}
 
 const ANCESTRAL_LABELS: { label: string; point: number }[] = [
   { label: "Ошибка отца по мужской линии", point: 8 },
@@ -38,6 +50,13 @@ export default function MatrixPage() {
   const [selectedEnergyId, setSelectedEnergyId] = useState<number | null>(null);
   const [showFatalMistake, setShowFatalMistake] = useState(false);
   const [ancestralLabel, setAncestralLabel] = useState<string | null>(null);
+  const { unlocked } = useMatrixUnlock();
+  const unlockCtaRef = useRef<HTMLDivElement>(null);
+
+  const goToUnlock = () => {
+    hapticImpact("light");
+    unlockCtaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
 
   useEffect(() => {
     const saved = getSavedBirthDate();
@@ -136,158 +155,208 @@ export default function MatrixPage() {
           </div>
 
           <div className="px-5 mt-6 animate-fade-up [animation-delay:140ms] opacity-0">
-            <UnlockGate title="Полный разбор матрицы">
-              <h2 className="text-lg font-semibold text-ink mb-3">5 предназначений</h2>
-              <div className="grid grid-cols-2 gap-3">
-                {DESTINY_LABELS.map(({ key, label }) => {
-                  const value = result.destinies[key];
-                  return (
-                    <button
-                      key={key}
-                      type="button"
-                      onClick={() => setSelectedEnergyId(value)}
-                      className="tap-scale flex items-center gap-3 rounded-3xl bg-white p-4 shadow-card text-left"
-                    >
-                      <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-beige-light text-base font-semibold text-beige-dark">
-                        {value}
-                      </span>
-                      <div className="min-w-0">
-                        <p className="text-xs text-ink-soft">{label}</p>
+            <h2 className="text-lg font-semibold text-ink mb-3">5 предназначений</h2>
+            <div className="grid grid-cols-2 gap-3">
+              {DESTINY_LABELS.map(({ key, label }) => {
+                const value = result.destinies[key];
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => (unlocked ? setSelectedEnergyId(value) : goToUnlock())}
+                    className="tap-scale flex items-center gap-3 rounded-3xl bg-white p-4 shadow-card text-left"
+                  >
+                    <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-beige-light text-base font-semibold text-beige-dark">
+                      {value}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-xs text-ink-soft">{label}</p>
+                      {unlocked ? (
                         <p className="text-sm font-semibold text-ink leading-snug line-clamp-2">
                           {getArcanaEnergy(value)?.name}
                         </p>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+                      ) : (
+                        <LockedLabel />
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
 
-              <button
-                type="button"
-                onClick={() => setShowFatalMistake(true)}
-                className="tap-scale mt-3 w-full rounded-3xl bg-white p-4 shadow-card flex items-center gap-3"
-              >
-                <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-beige-light text-base font-semibold text-beige-dark">
-                  {result.fatalMistake}
-                </span>
-                <div className="min-w-0 text-left">
-                  <p className="text-xs text-ink-soft">Роковая ошибка</p>
+            <button
+              type="button"
+              onClick={() => (unlocked ? setShowFatalMistake(true) : goToUnlock())}
+              className="tap-scale mt-3 w-full rounded-3xl bg-white p-4 shadow-card flex items-center gap-3"
+            >
+              <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-beige-light text-base font-semibold text-beige-dark">
+                {result.fatalMistake}
+              </span>
+              <div className="min-w-0 text-left">
+                <p className="text-xs text-ink-soft">Роковая ошибка</p>
+                {unlocked ? (
                   <p className="text-sm font-semibold text-ink truncate">
                     {getFatalMistake(result.fatalMistake)?.name}
                   </p>
-                </div>
-              </button>
+                ) : (
+                  <LockedLabel />
+                )}
+              </div>
+            </button>
 
-              <h2 className="text-lg font-semibold text-ink mb-3 mt-6">Родовые ошибки</h2>
-              <div className="grid grid-cols-2 gap-3">
-                {ANCESTRAL_LABELS.map(({ label, point }) => {
-                  const value = result.points[point];
-                  return (
-                    <button
-                      key={label}
-                      type="button"
-                      onClick={() => {
-                        hapticSelection();
-                        setAncestralLabel(label);
-                      }}
-                      className="tap-scale flex items-center gap-3 rounded-3xl bg-white p-4 shadow-card text-left"
-                    >
-                      <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-beige-light text-base font-semibold text-beige-dark">
-                        {value}
-                      </span>
-                      <div className="min-w-0">
-                        <p className="text-xs text-ink-soft leading-tight">{label}</p>
+            <h2 className="text-lg font-semibold text-ink mb-3 mt-6">Родовые ошибки</h2>
+            <div className="grid grid-cols-2 gap-3">
+              {ANCESTRAL_LABELS.map(({ label, point }) => {
+                const value = result.points[point];
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => {
+                      if (!unlocked) return goToUnlock();
+                      hapticSelection();
+                      setAncestralLabel(label);
+                    }}
+                    className="tap-scale flex items-center gap-3 rounded-3xl bg-white p-4 shadow-card text-left"
+                  >
+                    <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-beige-light text-base font-semibold text-beige-dark">
+                      {value}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-xs text-ink-soft leading-tight">{label}</p>
+                      {unlocked ? (
                         <p className="text-sm font-semibold text-ink truncate">
                           {getAncestralError(value)?.name}
                         </p>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+                      ) : (
+                        <LockedLabel />
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
 
-              <h2 className="text-lg font-semibold text-ink mb-3 mt-6">Чакры</h2>
-              <div className="rounded-3xl bg-white p-4 shadow-card flex justify-between flex-wrap gap-y-3">
-                {result.chakras.map((value, i) => (
-                  <NumberBadge key={i} value={value} size="sm" onClick={() => setSelectedEnergyId(value)} />
-                ))}
-              </div>
+            <h2 className="text-lg font-semibold text-ink mb-3 mt-6">Чакры</h2>
+            <div className="rounded-3xl bg-white p-4 shadow-card flex justify-between flex-wrap gap-y-3">
+              {result.chakras.map((value, i) => (
+                <NumberBadge
+                  key={i}
+                  value={value}
+                  size="sm"
+                  onClick={() => (unlocked ? setSelectedEnergyId(value) : goToUnlock())}
+                />
+              ))}
+            </div>
 
-              <h2 className="text-lg font-semibold text-ink mb-3 mt-6">Код души</h2>
-              <div className="rounded-3xl bg-white p-4 shadow-card flex justify-center gap-6">
-                {result.soulCode.map((value, i) => (
-                  <NumberBadge key={i} value={value} size="md" onClick={() => setSelectedEnergyId(value)} />
-                ))}
-              </div>
+            <h2 className="text-lg font-semibold text-ink mb-3 mt-6">Код души</h2>
+            <div className="rounded-3xl bg-white p-4 shadow-card flex justify-center gap-6">
+              {result.soulCode.map((value, i) => (
+                <NumberBadge
+                  key={i}
+                  value={value}
+                  size="md"
+                  onClick={() => (unlocked ? setSelectedEnergyId(value) : goToUnlock())}
+                />
+              ))}
+            </div>
 
-              <div className="mt-6 flex flex-col gap-3">
-                <Link
-                  href="/matrix/forecast"
-                  className="tap-scale flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card"
-                >
-                  <div>
-                    <p className="text-sm font-semibold text-ink">Прогноз</p>
-                    <p className="mt-0.5 text-xs text-ink-soft">Персональный год, месяц, день и график энергии</p>
-                  </div>
-                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-beige-light">
+            <div className="mt-6 flex flex-col gap-3">
+              <Link
+                href="/matrix/forecast"
+                className="tap-scale flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-ink">Прогноз</p>
+                  <p className="mt-0.5 text-xs text-ink-soft">Персональный год, месяц, день и график энергии</p>
+                </div>
+                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-beige-light">
+                  {unlocked ? (
                     <ArrowRight className="w-4 h-4 text-beige-dark" strokeWidth={2} />
-                  </span>
-                </Link>
+                  ) : (
+                    <Lock className="w-4 h-4 text-beige-dark" strokeWidth={2} />
+                  )}
+                </span>
+              </Link>
 
-                <Link
-                  href="/matrix/karmic-knots"
-                  className="tap-scale flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card"
-                >
-                  <div>
-                    <p className="text-sm font-semibold text-ink">Кармические узлы</p>
-                    <p className="mt-0.5 text-xs text-ink-soft">Справочник комбинаций из 3 арканов</p>
-                  </div>
-                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-beige-light">
+              <Link
+                href="/matrix/karmic-knots"
+                className="tap-scale flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-ink">Кармические узлы</p>
+                  <p className="mt-0.5 text-xs text-ink-soft">Справочник комбинаций из 3 арканов</p>
+                </div>
+                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-beige-light">
+                  {unlocked ? (
                     <ArrowRight className="w-4 h-4 text-beige-dark" strokeWidth={2} />
-                  </span>
-                </Link>
+                  ) : (
+                    <Lock className="w-4 h-4 text-beige-dark" strokeWidth={2} />
+                  )}
+                </span>
+              </Link>
 
-                <Link
-                  href="/matrix/spiritual-sphere"
-                  className="tap-scale flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card"
-                >
-                  <div>
-                    <p className="text-sm font-semibold text-ink">Сфера духовности</p>
-                    <p className="mt-0.5 text-xs text-ink-soft">Задача по месяцу рождения и энергии</p>
-                  </div>
-                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-beige-light">
+              <Link
+                href="/matrix/spiritual-sphere"
+                className="tap-scale flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-ink">Сфера духовности</p>
+                  <p className="mt-0.5 text-xs text-ink-soft">Задача по месяцу рождения и энергии</p>
+                </div>
+                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-beige-light">
+                  {unlocked ? (
                     <ArrowRight className="w-4 h-4 text-beige-dark" strokeWidth={2} />
-                  </span>
-                </Link>
+                  ) : (
+                    <Lock className="w-4 h-4 text-beige-dark" strokeWidth={2} />
+                  )}
+                </span>
+              </Link>
 
-                <Link
-                  href="/matrix/relationships"
-                  className="tap-scale flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card"
-                >
-                  <div>
-                    <p className="text-sm font-semibold text-ink">Сфера отношений</p>
-                    <p className="mt-0.5 text-xs text-ink-soft">Энергии в контексте партнёрства</p>
-                  </div>
-                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-beige-light">
+              <Link
+                href="/matrix/relationships"
+                className="tap-scale flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-ink">Сфера отношений</p>
+                  <p className="mt-0.5 text-xs text-ink-soft">Энергии в контексте партнёрства</p>
+                </div>
+                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-beige-light">
+                  {unlocked ? (
                     <ArrowRight className="w-4 h-4 text-beige-dark" strokeWidth={2} />
-                  </span>
-                </Link>
+                  ) : (
+                    <Lock className="w-4 h-4 text-beige-dark" strokeWidth={2} />
+                  )}
+                </span>
+              </Link>
 
-                <Link
-                  href="/matrix/compatibility"
-                  className="tap-scale flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card"
-                >
-                  <div>
-                    <p className="text-sm font-semibold text-ink">Совместимость</p>
-                    <p className="mt-0.5 text-xs text-ink-soft">Расчёт для двух партнёров</p>
-                  </div>
-                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-beige-light">
+              <Link
+                href="/matrix/compatibility"
+                className="tap-scale flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-ink">Совместимость</p>
+                  <p className="mt-0.5 text-xs text-ink-soft">Расчёт для двух партнёров</p>
+                </div>
+                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-beige-light">
+                  {unlocked ? (
                     <ArrowRight className="w-4 h-4 text-beige-dark" strokeWidth={2} />
-                  </span>
-                </Link>
-              </div>
-            </UnlockGate>
+                  ) : (
+                    <Lock className="w-4 h-4 text-beige-dark" strokeWidth={2} />
+                  )}
+                </span>
+              </Link>
+            </div>
           </div>
+
+          {!unlocked && (
+            <div ref={unlockCtaRef} className="px-5 mt-6 animate-fade-up [animation-delay:280ms] opacity-0">
+              <UnlockGate
+                title="Полный разбор матрицы"
+                description="Расшифровка предназначений, роковой ошибки, родовых ошибок, чакр, кода души и доступ к прогнозу, кармическим узлам, сферам и совместимости"
+              />
+            </div>
+          )}
         </>
       )}
 

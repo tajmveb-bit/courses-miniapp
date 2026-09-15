@@ -9,13 +9,15 @@ import { hapticImpact, hapticNotification } from "@/lib/telegram";
 interface UnlockGateProps {
   title?: string;
   price?: string;
-  children: React.ReactNode;
+  description?: string;
+  children?: React.ReactNode;
 }
 
 export default function UnlockGate({
   title = "Полный разбор",
   price = "15 000 ₸",
-  children,
+  description = "Подробная расшифровка событий и график жизненной энергии доступны после оплаты",
+  children = null,
 }: UnlockGateProps) {
   const { unlocked, checking, error, tryUnlock } = useMatrixUnlock();
   const [code, setCode] = useState("");
@@ -35,8 +37,8 @@ export default function UnlockGate({
       </div>
       <h3 className="mt-4 text-lg font-semibold text-ink">{title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-        Подробная расшифровка событий и график жизненной энергии доступны после оплаты —{" "}
-        {price}. Напишите в WhatsApp, чтобы оформить доступ, и вы получите код разблокировки.
+        {description} — {price}. Напишите в WhatsApp, чтобы оформить доступ, и вы получите код
+        разблокировки.
       </p>
 
       <button

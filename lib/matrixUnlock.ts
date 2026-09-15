@@ -3,6 +3,18 @@
 import { useCallback, useEffect, useState } from "react";
 
 const STORAGE_KEY = "matrix:unlocked";
+// Fires whenever any instance of this hook unlocks, so other instances mounted elsewhere on the
+// same page (e.g. a page reading `unlocked` directly alongside its own <UnlockGate>) pick up the
+// change immediately instead of only on their own next mount.
+const UNLOCK_EVENT = "matrix-unlock-changed";
+
+function readUnlocked(): boolean {
+  try {
+    return window.localStorage.getItem(STORAGE_KEY) === "yes";
+  } catch {
+    return false;
+  }
+}
 
 export function useMatrixUnlock() {
   const [unlocked, setUnlocked] = useState(false);
@@ -10,11 +22,10 @@ export function useMatrixUnlock() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      setUnlocked(window.localStorage.getItem(STORAGE_KEY) === "yes");
-    } catch {
-      // localStorage unavailable — stays locked.
-    }
+    setUnlocked(readUnlocked());
+    const onChange = () => setUnlocked(readUnlocked());
+    window.addEventListener(UNLOCK_EVENT, onChange);
+    return () => window.removeEventListener(UNLOCK_EVENT, onChange);
   }, []);
 
   const tryUnlock = useCallback(async (code: string) => {
@@ -28,12 +39,13 @@ export function useMatrixUnlock() {
       });
       const data = await res.json();
       if (data.valid) {
-        setUnlocked(true);
         try {
           window.localStorage.setItem(STORAGE_KEY, "yes");
         } catch {
           // ignore
         }
+        setUnlocked(true);
+        window.dispatchEvent(new Event(UNLOCK_EVENT));
         return true;
       }
       setError("Неверный код. Проверьте и попробуйте ещё раз.");
