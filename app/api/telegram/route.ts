@@ -4,6 +4,11 @@ import { sendTelegramMessage } from "@/lib/notifyAdmin";
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
 const APP_URL = process.env.APP_URL ?? "https://courses-miniapp.vercel.app";
+// Telegram's in-app WebView caches a mini app by its exact URL, sometimes even across a full
+// app restart. Appending the deploy's commit SHA busts that cache on every new release, since
+// each deploy gets a different URL. VERCEL_GIT_COMMIT_SHA is set automatically by Vercel.
+const APP_VERSION = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 8) ?? "dev";
+const VERSIONED_APP_URL = `${APP_URL}?v=${APP_VERSION}`;
 
 interface TelegramUpdate {
   message?: {
@@ -41,7 +46,7 @@ export async function POST(req: NextRequest) {
         chat_id: chatId,
         text: "Добро пожаловать в клуб «Красота без рабства» 👋\n\nЗдесь — спокойная система ухода за кожей и волосами для женщин 35+.",
         reply_markup: {
-          inline_keyboard: [[{ text: "Открыть клуб", web_app: { url: APP_URL } }]],
+          inline_keyboard: [[{ text: "Открыть клуб", web_app: { url: VERSIONED_APP_URL } }]],
         },
       }),
     });
