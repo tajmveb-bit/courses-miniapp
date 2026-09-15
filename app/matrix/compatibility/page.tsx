@@ -103,8 +103,8 @@ export default function CompatibilityPage() {
               конфликты, деловую совместимость и тип отношений.
             </p>
             <div className="flex flex-col gap-3">
-              <DateInput value={dateA} onChange={setDateA} placeholder="Партнёр 1: дд.мм.гггг" />
-              <DateInput value={dateB} onChange={setDateB} placeholder="Партнёр 2: дд.мм.гггг" />
+              <DateInput value={dateA} onChange={setDateA} label="Партнёр 1" />
+              <DateInput value={dateB} onChange={setDateB} label="Партнёр 2" />
             </div>
             <button
               type="button"

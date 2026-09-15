@@ -69,7 +69,7 @@ export default function ForecastPage() {
             <p className="text-sm leading-relaxed text-ink-soft mb-4">
               Введите дату рождения и день, на который хотите узнать прогноз.
             </p>
-            <DateInput value={dateInput} onChange={setDateInput} placeholder="Дата рождения: дд.мм.гггг" />
+            <DateInput value={dateInput} onChange={setDateInput} label="Дата рождения" />
 
             <div className="mt-3 grid grid-cols-3 gap-2">
               <input
