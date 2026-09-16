@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { Lock, MessageCircle } from "lucide-react";
 import { useMatrixUnlock } from "@/lib/matrixUnlock";
+import type { Section } from "@/lib/unlockCodes";
 import { openWhatsApp } from "@/lib/whatsapp";
 import { hapticImpact, hapticNotification } from "@/lib/telegram";
 
 interface UnlockGateProps {
+  section: Section;
   title?: string;
   price?: string;
   description?: string;
@@ -14,12 +16,13 @@ interface UnlockGateProps {
 }
 
 export default function UnlockGate({
+  section,
   title = "Полный разбор",
   price = "15 000 ₸",
   description = "Подробная расшифровка событий и график жизненной энергии доступны после оплаты",
   children = null,
 }: UnlockGateProps) {
-  const { unlocked, checking, error, tryUnlock } = useMatrixUnlock();
+  const { unlocked, checking, error, tryUnlock } = useMatrixUnlock(section);
   const [code, setCode] = useState("");
 
   if (unlocked) return <>{children}</>;
@@ -45,7 +48,7 @@ export default function UnlockGate({
         type="button"
         onClick={() => {
           hapticImpact("light");
-          openWhatsApp("Здравствуйте! Хочу получить полный разбор прогноза в Матрице судьбы.");
+          openWhatsApp(`Здравствуйте! Хочу получить доступ к разделу «${title}» в Матрице судьбы.`);
         }}
         className="tap-scale mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white shadow-button"
       >

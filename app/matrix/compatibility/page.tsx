@@ -110,7 +110,7 @@ export default function CompatibilityPage() {
       </div>
 
       <div className="px-5 mt-4 animate-fade-up [animation-delay:60ms] opacity-0">
-        <UnlockGate title="Совместимость">
+        <UnlockGate section="compatibility" title="Совместимость">
           <div className="rounded-4xl bg-white shadow-soft p-6">
             <p className="text-sm leading-relaxed text-ink-soft mb-4">
               Введите даты рождения двух партнёров, чтобы узнать причину встречи, возможные

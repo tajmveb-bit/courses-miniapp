@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendTelegramMessage } from "@/lib/notifyAdmin";
+import { generateCodeBatch } from "@/lib/unlockCodes";
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
+const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
 const APP_URL = process.env.APP_URL ?? "https://courses-miniapp.vercel.app";
 // Telegram's in-app WebView caches a mini app by its exact URL, sometimes even across a full
 // app restart. Appending the deploy's commit SHA busts that cache on every new release, since
@@ -35,6 +37,23 @@ export async function POST(req: NextRequest) {
 
   if (chatId && text === "/id") {
     await sendTelegramMessage(chatId, `ID этого чата: ${chatId}`);
+    return NextResponse.json({ ok: true });
+  }
+
+  if (chatId && text === "/newcode") {
+    if (!ADMIN_CHAT_ID || String(chatId) !== ADMIN_CHAT_ID) {
+      return NextResponse.json({ ok: true });
+    }
+    try {
+      const batch = await generateCodeBatch();
+      const lines = batch.map((item) => `${item.label}: ${item.code}`).join("\n");
+      await sendTelegramMessage(
+        chatId,
+        `🔑 Новый набор кодов для клиента:\n\n${lines}\n\nКаждый код одноразовый и открывает только свой раздел. Отправьте клиенту нужные коды в WhatsApp.`
+      );
+    } catch {
+      await sendTelegramMessage(chatId, "Не удалось создать коды — проверьте настройку базы данных (Upstash).");
+    }
     return NextResponse.json({ ok: true });
   }
 

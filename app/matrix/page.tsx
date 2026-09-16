@@ -50,7 +50,7 @@ export default function MatrixPage() {
   const [selectedEnergyId, setSelectedEnergyId] = useState<number | null>(null);
   const [showFatalMistake, setShowFatalMistake] = useState(false);
   const [ancestralLabel, setAncestralLabel] = useState<string | null>(null);
-  const { unlocked } = useMatrixUnlock();
+  const { unlocked } = useMatrixUnlock("matrix");
   const unlockCtaRef = useRef<HTMLDivElement>(null);
 
   const goToUnlock = () => {
@@ -337,8 +337,9 @@ export default function MatrixPage() {
           {!unlocked && (
             <div ref={unlockCtaRef} className="px-5 mt-6 animate-fade-up [animation-delay:280ms] opacity-0">
               <UnlockGate
+                section="matrix"
                 title="Полный разбор матрицы"
-                description="Расшифровка 5 предназначений, роковой ошибки и доступ к прогнозу, кармическим узлам, сферам и совместимости"
+                description="Расшифровка 5 предназначений и роковой ошибки"
               />
             </div>
           )}

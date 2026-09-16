@@ -11,7 +11,7 @@ export default function RelationshipsPage() {
       </div>
 
       <div className="px-5 mt-4 animate-fade-up [animation-delay:60ms] opacity-0">
-        <UnlockGate title="Сфера отношений">
+        <UnlockGate section="relationships" title="Сфера отношений">
           <div className="rounded-4xl bg-white shadow-soft p-6">
             <p className="text-sm leading-relaxed text-ink-soft">
               Четвёртая сфера начинает полноценно влиять на судьбу ближе к 35 годам. Партнёры
