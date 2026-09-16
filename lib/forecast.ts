@@ -35,6 +35,16 @@ export function calculateEnergyCode(day: number, month: number, birthYear: numbe
   return String(code).split("").map(Number);
 }
 
+/** Текущий полный возраст на сегодняшнюю дату. */
+export function calculateCurrentAge(day: number, month: number, birthYear: number): number {
+  const today = new Date();
+  let age = today.getFullYear() - birthYear;
+  const hadBirthdayThisYear =
+    today.getMonth() + 1 > month || (today.getMonth() + 1 === month && today.getDate() >= day);
+  if (!hadBirthdayThisYear) age -= 1;
+  return age;
+}
+
 export const MONTH_NAMES = [
   "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
   "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь",

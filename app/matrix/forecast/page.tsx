@@ -9,7 +9,13 @@ import UnlockGate from "@/components/matrix/UnlockGate";
 import EnergyGraphChart from "@/components/matrix/EnergyGraphChart";
 import ForecastEventSheet from "@/components/matrix/ForecastEventSheet";
 import { parseBirthDate } from "@/lib/matrix";
-import { calculateForecast, calculateEnergyCode, MONTH_NAMES, type ForecastResult } from "@/lib/forecast";
+import {
+  calculateForecast,
+  calculateEnergyCode,
+  calculateCurrentAge,
+  MONTH_NAMES,
+  type ForecastResult,
+} from "@/lib/forecast";
 import { getForecastEvent } from "@/data/matrixForecastEvents";
 import { getEnergyGraphLevel } from "@/data/matrixEnergyGraph";
 import { getSavedBirthDate, saveBirthDate } from "@/lib/dateInput";
@@ -24,6 +30,7 @@ export default function ForecastPage() {
   const [targetDay, setTargetDay] = useState(now.getDate());
   const [result, setResult] = useState<ForecastResult | null>(null);
   const [energyDigits, setEnergyDigits] = useState<number[]>([]);
+  const [energyStartAge, setEnergyStartAge] = useState(17);
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
   const [graphValue, setGraphValue] = useState<number | null>(null);
 
@@ -33,6 +40,7 @@ export default function ForecastPage() {
     const forecast = calculateForecast(parsedBirth.day, parsedBirth.month, year, month, day);
     setResult(forecast);
     setEnergyDigits(calculateEnergyCode(parsedBirth.day, parsedBirth.month, Number(parsedBirth.year)));
+    setEnergyStartAge(calculateCurrentAge(parsedBirth.day, parsedBirth.month, Number(parsedBirth.year)));
   };
 
   useEffect(() => {
@@ -162,7 +170,7 @@ export default function ForecastPage() {
               <div className="mt-6">
                 <h2 className="text-lg font-semibold text-ink mb-3">График жизненной энергии</h2>
                 <div className="rounded-4xl bg-white shadow-soft p-5">
-                  <EnergyGraphChart digits={energyDigits} onSelectValue={setGraphValue} />
+                  <EnergyGraphChart digits={energyDigits} startAge={energyStartAge} onSelectValue={setGraphValue} />
                   {graphLevel && (
                     <div className="mt-3 rounded-3xl bg-cream p-4">
                       <p className="text-sm font-semibold text-ink">
