@@ -18,7 +18,7 @@ interface UnlockGateProps {
 export default function UnlockGate({
   section,
   title = "Полный разбор",
-  price = "15 000 ₸",
+  price = "5 000 ₸",
   description = "Подробная расшифровка событий и график жизненной энергии доступны после оплаты",
   children = null,
 }: UnlockGateProps) {

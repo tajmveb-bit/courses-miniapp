@@ -77,7 +77,7 @@ export default function ForecastPage() {
       </div>
 
       <div className="px-5 mt-4 animate-fade-up [animation-delay:60ms] opacity-0">
-        <UnlockGate section="forecast" title="Прогноз">
+        <UnlockGate section="forecast" title="Прогноз" price="15 000 ₸">
           <div className="rounded-4xl bg-white shadow-soft p-6">
             <p className="text-sm leading-relaxed text-ink-soft mb-4">
               Введите дату рождения и день, на который хотите узнать прогноз.

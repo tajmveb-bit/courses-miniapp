@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Sparkles, ArrowRight, Lock } from "lucide-react";
+import { Sparkles, ArrowRight, Lock, Phone, MessageCircle } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import NumberBadge from "@/components/matrix/NumberBadge";
 import StarChart from "@/components/matrix/StarChart";
@@ -17,6 +17,7 @@ import { getArcanaEnergy, getFatalMistake } from "@/data/matrixArcana";
 import { getAncestralError } from "@/data/matrixAncestralErrors";
 import { getSavedBirthDate, saveBirthDate } from "@/lib/dateInput";
 import { hapticImpact, hapticSelection } from "@/lib/telegram";
+import { openWhatsApp } from "@/lib/whatsapp";
 
 // Заблокированные разделы остаются на виду (номер + подпись), но вместо расшифровки — замочек,
 // чтобы было видно, что тут серьёзное содержание, а не просто пустая страница.
@@ -343,6 +344,30 @@ export default function MatrixPage() {
               />
             </div>
           )}
+
+          <div className="px-5 mt-6 animate-fade-up [animation-delay:300ms] opacity-0">
+            <div className="rounded-4xl bg-beige-dark p-6 text-center text-white shadow-lifted">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/15">
+                <Phone className="w-6 h-6 text-white" strokeWidth={1.8} />
+              </div>
+              <h3 className="mt-4 text-lg font-semibold">Личная консультация с Анастасией</h3>
+              <p className="mt-2 text-sm leading-relaxed text-white/80">
+                Часовая встреча, на которой разбираем всю вашу матрицу целиком: предназначения,
+                прогнозы, отношения, финансы и любые вопросы, которые для вас важны — 50 000 ₸.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  hapticImpact("light");
+                  openWhatsApp("Здравствуйте! Хочу записаться на личную консультацию с Анастасией по Матрице судьбы.");
+                }}
+                className="tap-scale mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-4 text-base font-semibold text-beige-dark shadow-button"
+              >
+                <MessageCircle className="w-5 h-5" strokeWidth={2} />
+                Записаться в WhatsApp
+              </button>
+            </div>
+          </div>
         </>
       )}
 
