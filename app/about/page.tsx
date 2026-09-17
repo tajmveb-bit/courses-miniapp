@@ -3,7 +3,7 @@ import SocialLinks from "@/components/SocialLinks";
 import BackButton from "@/components/BackButton";
 
 const EXPERT_NAME = "Анастасия";
-const EXPERT_TAGLINE = "Косметолог, владелица салона красоты, автор клуба «Красота без рабства»";
+const EXPERT_TAGLINE = "Косметолог, владелица салона красоты, автор клуба «Код Красоты»";
 
 export default function AboutPage() {
   return (
@@ -39,7 +39,7 @@ export default function AboutPage() {
             вторую работу или, наоборот, бросает уход совсем.
           </p>
           <p className="text-sm leading-relaxed text-ink-soft">
-            Клуб «Красота без рабства» — это спокойная система, а не марафон идеальности. Мы
+            Клуб «Код Красоты» — это спокойная система, а не марафон идеальности. Мы
             собираем реалистичный уход за кожей и волосами, разбираем составы и вопросы участниц
             и помогаем встроить заботу о себе в обычную занятую жизнь.
           </p>

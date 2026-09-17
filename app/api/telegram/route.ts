@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         chat_id: chatId,
-        text: "Добро пожаловать в клуб «Красота без рабства» 👋\n\nЗдесь — спокойная система ухода за кожей и волосами для женщин 35+.",
+        text: "Добро пожаловать в клуб «Код Красоты» 👋\n\nЗдесь — спокойная система ухода за кожей и волосами для женщин 35+.",
         reply_markup: {
           inline_keyboard: [[{ text: "Открыть клуб", web_app: { url: VERSIONED_APP_URL } }]],
         },

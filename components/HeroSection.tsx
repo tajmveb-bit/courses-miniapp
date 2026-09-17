@@ -15,7 +15,7 @@ export default function HeroSection() {
             Привет! <span className="inline-block">👋</span>
           </p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight text-ink">
-            Клуб «Красота без рабства»
+            Клуб «Код Красоты»
           </h1>
           <p className="mt-2 text-sm font-medium text-beige-dark">Формула ухоженности 35+</p>
           <p className="mt-3 text-sm leading-relaxed text-ink-soft max-w-[90%]">
