@@ -9,6 +9,14 @@ export interface ForecastResult {
   targetDay: number;
 }
 
+export function calculatePersonalYearArcana(day: number, month: number, targetYear: number): number {
+  const dayArcana = reduceTo22(day);
+  const yearSum = String(targetYear)
+    .split("")
+    .reduce((sum, d) => sum + Number(d), 0);
+  return reduceTo22(reduceTo22(dayArcana + month) + reduceTo22(yearSum));
+}
+
 export function calculateForecast(
   day: number,
   month: number,
@@ -16,12 +24,7 @@ export function calculateForecast(
   targetMonth: number,
   targetDay: number
 ): ForecastResult {
-  const dayArcana = reduceTo22(day);
-  const yearSum = String(targetYear)
-    .split("")
-    .reduce((sum, d) => sum + Number(d), 0);
-
-  const personalYearArcana = reduceTo22(reduceTo22(dayArcana + month) + reduceTo22(yearSum));
+  const personalYearArcana = calculatePersonalYearArcana(day, month, targetYear);
   const personalMonthArcana = reduceTo22(personalYearArcana + targetMonth);
   const personalDayArcana = reduceTo22(personalMonthArcana + targetDay);
 

@@ -18,6 +18,9 @@ import { getAncestralError } from "@/data/matrixAncestralErrors";
 import { getSavedBirthDate, saveBirthDate } from "@/lib/dateInput";
 import { hapticImpact, hapticSelection } from "@/lib/telegram";
 import { openWhatsApp } from "@/lib/whatsapp";
+import { calculatePersonalYearArcana } from "@/lib/forecast";
+
+const CURRENT_YEAR = new Date().getFullYear();
 
 // Заблокированные разделы остаются на виду (номер + подпись), но вместо расшифровки — замочек,
 // чтобы было видно, что тут серьёзное содержание, а не просто пустая страница.
@@ -84,6 +87,7 @@ export default function MatrixPage() {
 
   const selectedEnergy = selectedEnergyId ? getArcanaEnergy(selectedEnergyId) ?? null : null;
   const fatalMistakeEntry = result ? getFatalMistake(result.fatalMistake) ?? null : null;
+  const personalYearArcana = result ? calculatePersonalYearArcana(result.day, result.month, CURRENT_YEAR) : null;
   const ancestralSheetData =
     result && ancestralLabel
       ? (() => {
@@ -141,6 +145,29 @@ export default function MatrixPage() {
                   {getArcanaEnergy(result.mainEnergy)?.name}
                 </p>
                 <p className="mt-0.5 text-xs text-ink-soft">Нажмите, чтобы узнать больше</p>
+              </div>
+            </button>
+          </div>
+
+          <div className="px-5 mt-6 animate-fade-up [animation-delay:110ms] opacity-0">
+            <button
+              type="button"
+              onClick={() => personalYearArcana !== null && setSelectedEnergyId(personalYearArcana)}
+              className="tap-scale w-full rounded-4xl bg-white shadow-soft p-6 text-left flex items-center gap-4"
+            >
+              <span className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-beige-dark text-2xl font-semibold text-white shadow-button">
+                {personalYearArcana}
+              </span>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-beige-dark">
+                  Ваше число {CURRENT_YEAR} года
+                </p>
+                <p className="mt-1 text-lg font-semibold text-ink">
+                  {personalYearArcana !== null ? getArcanaEnergy(personalYearArcana)?.name : ""}
+                </p>
+                <p className="mt-0.5 text-xs text-ink-soft">
+                  Полный прогноз по месяцам и дням — в разделе «Прогноз»
+                </p>
               </div>
             </button>
           </div>
