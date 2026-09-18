@@ -26,4 +26,6 @@ export const redis = {
   // Atomically sets the key only if it doesn't already exist — returns "OK" on first
   // success, null if the key was already set (used to enforce single-use codes).
   setNx: (key: string, value: string) => command(["SET", key, value, "NX"]) as Promise<"OK" | null>,
+  sadd: (key: string, member: string) => command(["SADD", key, member]),
+  smembers: (key: string) => command(["SMEMBERS", key]) as Promise<string[]>,
 };

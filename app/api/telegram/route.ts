@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendTelegramMessage } from "@/lib/notifyAdmin";
 import { generateCodeBatch } from "@/lib/unlockCodes";
+import { recordUser, listUsers } from "@/lib/botUsers";
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
@@ -14,9 +15,13 @@ const VERSIONED_APP_URL = `${APP_URL}?v=${APP_VERSION}`;
 
 interface TelegramUpdate {
   message?: {
-    chat: { id: number };
+    chat: { id: number; username?: string; first_name?: string; last_name?: string };
     text?: string;
   };
+}
+
+function isAdmin(chatId: number): boolean {
+  return Boolean(ADMIN_CHAT_ID) && String(chatId) === ADMIN_CHAT_ID;
 }
 
 export async function POST(req: NextRequest) {
@@ -32,8 +37,17 @@ export async function POST(req: NextRequest) {
   }
 
   const update: TelegramUpdate = await req.json();
-  const chatId = update.message?.chat.id;
+  const chat = update.message?.chat;
+  const chatId = chat?.id;
   const text = update.message?.text?.trim();
+
+  if (chat) {
+    try {
+      await recordUser(chat);
+    } catch {
+      // Redis not configured or unreachable — don't block replying to the user over this.
+    }
+  }
 
   if (chatId && text === "/id") {
     await sendTelegramMessage(chatId, `ID этого чата: ${chatId}`);
@@ -41,7 +55,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (chatId && text === "/newcode") {
-    if (!ADMIN_CHAT_ID || String(chatId) !== ADMIN_CHAT_ID) {
+    if (!isAdmin(chatId)) {
       return NextResponse.json({ ok: true });
     }
     try {
@@ -53,6 +67,29 @@ export async function POST(req: NextRequest) {
       );
     } catch {
       await sendTelegramMessage(chatId, "Не удалось создать коды — проверьте настройку базы данных (Upstash).");
+    }
+    return NextResponse.json({ ok: true });
+  }
+
+  if (chatId && text === "/users") {
+    if (!isAdmin(chatId)) {
+      return NextResponse.json({ ok: true });
+    }
+    try {
+      const users = await listUsers();
+      if (users.length === 0) {
+        await sendTelegramMessage(chatId, "Пока никто не писал боту.");
+      } else {
+        const lines = users.map((u) => {
+          const name = [u.firstName, u.lastName].filter(Boolean).join(" ") || "без имени";
+          const handle = u.username ? `@${u.username}` : "без username";
+          const lastSeen = new Date(u.lastSeen).toLocaleString("ru-RU", { timeZone: "Asia/Almaty" });
+          return `${name} (${handle}) — id ${u.chatId}, был(а) ${lastSeen}`;
+        });
+        await sendTelegramMessage(chatId, `👥 Пользователи бота (${users.length}):\n\n${lines.join("\n")}`);
+      }
+    } catch {
+      await sendTelegramMessage(chatId, "Не удалось получить список — проверьте настройку базы данных (Upstash).");
     }
     return NextResponse.json({ ok: true });
   }
