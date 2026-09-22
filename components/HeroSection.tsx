@@ -9,7 +9,18 @@ export default function HeroSection() {
   return (
     <section className="px-5 pt-6 animate-fade-up">
       <div className="relative rounded-5xl bg-white shadow-soft overflow-hidden">
-        <div className="relative px-6 pt-7 pb-0">
+        <div className="relative h-72 w-full">
+          <Image
+            src="/images/expert.jpg"
+            alt="Эксперт клуба"
+            fill
+            priority
+            sizes="(max-width: 480px) 100vw, 480px"
+            className="object-cover object-[50%_8%]"
+          />
+        </div>
+
+        <div className="relative px-6 pt-5 pb-7">
           <p className="text-2xl">
             Привет! <span className="inline-block">👋</span>
           </p>
@@ -21,18 +32,6 @@ export default function HeroSection() {
             Рассчитайте свою личную Матрицу судьбы: предназначения, роковую ошибку, прогнозы и
             совместимость — по методике, без общих гороскопов.
           </p>
-        </div>
-
-        <div className="relative mt-5 h-72 w-full">
-          <Image
-            src="/images/expert.jpg"
-            alt="Эксперт клуба"
-            fill
-            priority
-            sizes="(max-width: 480px) 100vw, 480px"
-            className="object-cover object-[50%_8%]"
-          />
-          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white to-transparent" />
         </div>
       </div>
 
