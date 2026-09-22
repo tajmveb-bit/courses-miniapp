@@ -7,6 +7,11 @@ export const SECTIONS = [
   "spiritual-sphere",
   "relationships",
   "compatibility",
+  "code-money",
+  "code-luck",
+  "code-relationships",
+  "code-health",
+  "code-spiritual",
 ] as const;
 
 export type Section = (typeof SECTIONS)[number];
@@ -18,6 +23,11 @@ export const SECTION_LABELS: Record<Section, string> = {
   "spiritual-sphere": "Сфера духовности",
   relationships: "Сфера отношений",
   compatibility: "Совместимость",
+  "code-money": "Денежный код",
+  "code-luck": "Код удачи",
+  "code-relationships": "Код отношений",
+  "code-health": "Код здоровья",
+  "code-spiritual": "Код духовного пути",
 };
 
 export function isSection(value: string): value is Section {
