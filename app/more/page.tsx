@@ -1,22 +1,8 @@
 import Link from "next/link";
-import {
-  ListChecks,
-  TrendingUp,
-  MapPin,
-  FlaskConical,
-  Percent,
-  User,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+import { Sparkles, User, ShieldCheck } from "lucide-react";
 
 const ITEMS = [
-  { href: "/tasks", label: "Задания и чек-листы", icon: ListChecks },
-  { href: "/progress", label: "Мой прогресс", icon: TrendingUp },
   { href: "/matrix", label: "Матрица судьбы", icon: Sparkles },
-  { href: "/salon", label: "Записаться в салон", icon: MapPin },
-  { href: "/cosmetics", label: "Разбор косметики", icon: FlaskConical },
-  { href: "/discounts", label: "Мои скидки", icon: Percent },
   { href: "/about", label: "Об эксперте", icon: User },
   { href: "/rules", label: "Правила клуба", icon: ShieldCheck },
 ] as const;

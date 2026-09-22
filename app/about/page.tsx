@@ -3,7 +3,7 @@ import SocialLinks from "@/components/SocialLinks";
 import BackButton from "@/components/BackButton";
 
 const EXPERT_NAME = "Анастасия";
-const EXPERT_TAGLINE = "Косметолог, владелица салона красоты, автор клуба «Код Красоты»";
+const EXPERT_TAGLINE = "Автор клуба «Код Красоты», эксперт по нумерологии и Матрице судьбы";
 
 export default function AboutPage() {
   return (
@@ -34,14 +34,9 @@ export default function AboutPage() {
       <div className="px-5 mt-6 animate-fade-up [animation-delay:140ms] opacity-0">
         <div className="rounded-4xl bg-white shadow-soft p-6 flex flex-col gap-4">
           <p className="text-sm leading-relaxed text-ink-soft">
-            Больше 5 лет я практикую как косметолог и руковожу собственным салоном. За это время я
-            увидела одну и ту же историю сотни раз: женщина 35+ устаёт превращать уход за собой во
-            вторую работу или, наоборот, бросает уход совсем.
-          </p>
-          <p className="text-sm leading-relaxed text-ink-soft">
-            Клуб «Код Красоты» — это спокойная система, а не марафон идеальности. Мы
-            собираем реалистичный уход за кожей и волосами, разбираем составы и вопросы участниц
-            и помогаем встроить заботу о себе в обычную занятую жизнь.
+            Клуб «Код Красоты» — это разбор своей Матрицы судьбы по методике: предназначения,
+            роковая ошибка, кармические узлы, прогнозы и совместимость — без общих гороскопов на
+            всех подряд.
           </p>
           <p className="text-sm leading-relaxed text-ink-soft">
             43 — это не финиш. Я на собственном примере показываю, что собранность и уверенность в

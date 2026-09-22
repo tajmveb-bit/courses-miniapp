@@ -2,17 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, BookOpen, MessageCircleQuestion, Grid2x2 } from "lucide-react";
+import { Home, Sparkles, MessageCircleQuestion, Grid2x2 } from "lucide-react";
 import { hapticSelection } from "@/lib/telegram";
 
 const NAV_ITEMS = [
   { href: "/", label: "Главная", icon: Home },
-  { href: "/materials", label: "Материалы", icon: BookOpen },
+  { href: "/matrix", label: "Матрица", icon: Sparkles },
   { href: "/ask", label: "Вопрос", icon: MessageCircleQuestion },
   { href: "/more", label: "Ещё", icon: Grid2x2 },
 ] as const;
 
-const HIDDEN_ON = [/^\/materials\/[^/]+/];
+const HIDDEN_ON: RegExp[] = [];
 
 export default function BottomNavigation() {
   const pathname = usePathname();

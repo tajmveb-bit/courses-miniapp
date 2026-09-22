@@ -11,8 +11,8 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Код Красоты — клуб ухода 35+",
-  description: "Спокойная система ухода за кожей и волосами для женщин 35+ с поддержкой специалиста",
+  title: "Код Красоты — Матрица судьбы",
+  description: "Нумерология и Матрица судьбы: предназначения, прогнозы и совместимость по методике",
 };
 
 export const viewport: Viewport = {

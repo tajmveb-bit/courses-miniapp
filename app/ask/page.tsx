@@ -6,7 +6,7 @@ import Disclaimer from "@/components/Disclaimer";
 import { openWhatsApp } from "@/lib/whatsapp";
 import { hapticImpact, hapticNotification } from "@/lib/telegram";
 
-const TOPICS = ["Кожа", "Волосы", "Домашний уход", "Процедуры", "Продукты", "Энергия и привычки", "Другое"];
+const TOPICS = ["Матрица судьбы", "Прогноз", "Отношения", "Совместимость", "Консультация", "Другое"];
 
 export default function AskPage() {
   const [topic, setTopic] = useState(TOPICS[0]);
@@ -58,7 +58,7 @@ export default function AskPage() {
         />
 
         <div className="mt-4">
-          <Disclaimer text="Клуб носит информационно-образовательный характер. По фотографиям и переписке нельзя поставить медицинский диагноз. При выраженных или необычных симптомах обратитесь к профильному специалисту очно." />
+          <Disclaimer text="Клуб носит информационно-образовательный характер. Разборы не заменяют очную консультацию и не являются предсказанием будущего в буквальном смысле." />
         </div>
 
         {status === "sent" && (
