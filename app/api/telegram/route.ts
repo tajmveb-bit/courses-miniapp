@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         chat_id: chatId,
-        text: "Добро пожаловать в клуб «Код Красоты» 👋\n\nЗдесь — ваша личная Матрица судьбы: предназначения, прогнозы, совместимость и разборы по нумерологии.",
+        text: "Добро пожаловать в клуб «Точка Силы» 👋\n\nЗдесь — ваша личная Матрица судьбы: предназначения, прогнозы, совместимость и разборы по нумерологии.",
         reply_markup: {
           inline_keyboard: [[{ text: "Открыть клуб", web_app: { url: VERSIONED_APP_URL } }]],
         },

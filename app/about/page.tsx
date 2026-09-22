@@ -2,8 +2,15 @@ import Image from "next/image";
 import SocialLinks from "@/components/SocialLinks";
 import BackButton from "@/components/BackButton";
 
-const EXPERT_NAME = "Анастасия";
-const EXPERT_TAGLINE = "Автор клуба «Код Красоты», эксперт по нумерологии и Матрице судьбы";
+const EXPERT_NAME = "Анастасия Гафке";
+const EXPERT_TAGLINE = "Предприниматель, бизнес-практик, эксперт по Матрице судьбы и управлению энергией";
+const QUOTE = "Успех в материи и внутренняя гармония строятся на одном правиле: нужна система, а не хаос.";
+
+const POINTS = [
+  "20 лет в бьюти-бизнесе в статусе действующего собственника. Я практик: знаю, как строить бизнес-процессы, управлять людьми, держать устойчивость и расти в деньгах без иллюзий и выгорания.",
+  "Эксперт по энергоразборам и Матрице судьбы. Помогаю как предпринимателям наладить поток ресурсов и убрать «потолки», так и тем, кто ищет своё истинное проявление, женскую опору и гармонию.",
+  "Мне 43 года, и на собственном опыте я доказываю: зрелость, красота, сильный системный бизнес и женственность великолепно дополняют друг друга.",
+];
 
 export default function AboutPage() {
   return (
@@ -27,21 +34,26 @@ export default function AboutPage() {
       </div>
 
       <div className="px-5 mt-6 text-center animate-fade-up [animation-delay:100ms] opacity-0">
-        <h2 className="text-2xl font-semibold text-ink">{EXPERT_NAME}</h2>
-        <p className="mt-1 text-sm font-medium text-beige-dark">{EXPERT_TAGLINE}</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-beige-dark">
+          Точка Силы — системный клуб
+        </p>
+        <h2 className="mt-1 text-2xl font-semibold text-ink">{EXPERT_NAME}</h2>
+        <p className="mt-1.5 text-sm font-medium text-ink-soft">{EXPERT_TAGLINE}</p>
+      </div>
+
+      <div className="px-5 mt-6 animate-fade-up [animation-delay:120ms] opacity-0">
+        <div className="rounded-4xl bg-beige-dark p-6 text-center text-white shadow-lifted">
+          <p className="text-base leading-relaxed italic">«{QUOTE}»</p>
+        </div>
       </div>
 
       <div className="px-5 mt-6 animate-fade-up [animation-delay:140ms] opacity-0">
         <div className="rounded-4xl bg-white shadow-soft p-6 flex flex-col gap-4">
-          <p className="text-sm leading-relaxed text-ink-soft">
-            Клуб «Код Красоты» — это разбор своей Матрицы судьбы по методике: предназначения,
-            роковая ошибка, кармические узлы, прогнозы и совместимость — без общих гороскопов на
-            всех подряд.
-          </p>
-          <p className="text-sm leading-relaxed text-ink-soft">
-            43 — это не финиш. Я на собственном примере показываю, что собранность и уверенность в
-            себе не требуют жертв и бесконечных трат — нужна система, а не хаос.
-          </p>
+          {POINTS.map((text) => (
+            <p key={text} className="text-sm leading-relaxed text-ink-soft">
+              {text}
+            </p>
+          ))}
         </div>
       </div>
 
