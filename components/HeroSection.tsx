@@ -30,7 +30,7 @@ export default function HeroSection() {
             fill
             priority
             sizes="(max-width: 480px) 100vw, 480px"
-            className="object-cover object-[50%_20%]"
+            className="object-cover object-[50%_8%]"
           />
           <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white to-transparent" />
         </div>
