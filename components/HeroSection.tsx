@@ -23,14 +23,14 @@ export default function HeroSection() {
           </p>
         </div>
 
-        <div className="relative mt-5 h-56 w-full">
+        <div className="relative mt-5 h-72 w-full">
           <Image
-            src="/images/expert.webp"
+            src="/images/expert.jpg"
             alt="Эксперт клуба"
             fill
             priority
             sizes="(max-width: 480px) 100vw, 480px"
-            className="object-cover object-top"
+            className="object-cover object-[50%_20%]"
           />
           <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white to-transparent" />
         </div>

@@ -23,7 +23,7 @@ export default function AboutPage() {
       <div className="px-5 mt-6 animate-fade-up [animation-delay:60ms] opacity-0">
         <div className="relative mx-auto w-full max-w-[280px] aspect-[4/5] rounded-[3rem] overflow-hidden shadow-lifted">
           <Image
-            src="/images/expert.webp"
+            src="/images/expert.jpg"
             alt={EXPERT_NAME}
             fill
             priority
