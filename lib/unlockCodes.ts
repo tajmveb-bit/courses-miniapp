@@ -66,6 +66,17 @@ export async function generateCodeBatch(): Promise<IssuedCode[]> {
   return results;
 }
 
+// One code for one section only — used when a client buys a single item rather than the
+// full batch (e.g. through the sales bot).
+export async function generateSingleCode(section: Section): Promise<IssuedCode> {
+  let code = randomCode();
+  while (await redis.get(`code:${code}`)) {
+    code = randomCode();
+  }
+  await redis.set(`code:${code}`, section);
+  return { section, label: SECTION_LABELS[section], code };
+}
+
 export async function redeemCode(rawCode: string, section: Section): Promise<boolean> {
   const code = rawCode.trim().toUpperCase();
   if (!code) return false;
