@@ -246,7 +246,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-  if (text === "/start" || text === "/menu" || text?.toLowerCase() === "меню") {
+  if (text?.startsWith("/start")) {
+    // Deep-link payload from a channel post button: t.me/<bot>?start=ask or ?start=buy.
+    const payload = text.slice("/start".length).trim();
+    if (payload === "ask") {
+      const product = getProduct("qa5")!;
+      await setPendingOrder(chatId, product.id, product.price);
+      await sendMessage(chatId, paymentInstructions(product.label, product.price));
+    } else {
+      await sendMessage(chatId, WELCOME, mainMenu());
+    }
+    return NextResponse.json({ ok: true });
+  }
+
+  if (text === "/menu" || text?.toLowerCase() === "меню") {
     await sendMessage(chatId, WELCOME, mainMenu());
     return NextResponse.json({ ok: true });
   }
