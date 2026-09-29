@@ -37,10 +37,6 @@ interface TelegramUpdate {
   };
 }
 
-function isAdmin(userId: number): boolean {
-  return Boolean(ADMIN_CHAT_ID) && String(userId) === ADMIN_CHAT_ID;
-}
-
 async function tg(method: string, body: Record<string, unknown>): Promise<void> {
   if (!BOT_TOKEN) return;
   await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${method}`, {
@@ -98,9 +94,36 @@ function paymentInstructions(productLabel: string, price: number): string {
   return (
     `Отлично! «${productLabel}» — ${price.toLocaleString("ru-RU")}₸.\n\n` +
     `1. Оплатите по ссылке: ${KASPI_LINK}\n` +
-    `2. Пришлите сюда скриншот чека (с суммой и датой оплаты)\n\n` +
-    `Как только оплата подтвердится, вы сразу получите доступ.`
+    `2. Пришлите сюда скриншот чека\n\n` +
+    `Как только чек придёт, доступ откроется сразу.`
   );
+}
+
+// No payment verification — a received screenshot is treated as proof of payment and the
+// key is issued immediately, per an explicit decision to skip checking against Kaspi.
+async function fulfillOrder(chatId: number, productId: string): Promise<void> {
+  const product = getProduct(productId);
+  if (!product) return;
+
+  if (product.kind === "section" && product.section) {
+    const issued = await generateSingleCode(product.section);
+    await sendMessage(
+      chatId,
+      `✅ Оплата получена!\n\nКод доступа к разделу «${issued.label}»: ${issued.code}\n\nВведите его в приложении в этом разделе, чтобы открыть полный разбор.`
+    );
+  } else if (product.kind === "consult") {
+    await sendMessage(
+      chatId,
+      "✅ Оплата получена!\n\nАнастасия свяжется с вами напрямую, чтобы согласовать время консультации."
+    );
+  } else if (product.kind === "qa5") {
+    await grantQa5(chatId);
+    await sendMessage(
+      chatId,
+      "✅ Оплата получена!\n\nМожете задать до 5 вопросов прямо здесь, сообщением — каждый вопрос будет передан Анастасии, ответ придёт вам сюда."
+    );
+  }
+  await clearPendingOrder(chatId);
 }
 
 export async function POST(req: NextRequest) {
@@ -153,46 +176,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
-    if (data.startsWith("confirm:")) {
-      if (!isAdmin(cq.from.id)) {
-        await answerCallback(cq.id, "Только для администратора");
-        return NextResponse.json({ ok: true });
-      }
-      const [, buyerChatIdRaw, productId] = data.split(":");
-      const buyerChatId = Number(buyerChatIdRaw);
-      const product = getProduct(productId);
-      if (!product) {
-        await answerCallback(cq.id, "Товар не найден");
-        return NextResponse.json({ ok: true });
-      }
-
-      try {
-        if (product.kind === "section" && product.section) {
-          const issued = await generateSingleCode(product.section);
-          await sendMessage(
-            buyerChatId,
-            `✅ Оплата подтверждена!\n\nКод доступа к разделу «${issued.label}»: ${issued.code}\n\nВведите его в приложении в этом разделе, чтобы открыть полный разбор.`
-          );
-        } else if (product.kind === "consult") {
-          await sendMessage(
-            buyerChatId,
-            "✅ Оплата подтверждена!\n\nАнастасия свяжется с вами напрямую, чтобы согласовать время консультации."
-          );
-        } else if (product.kind === "qa5") {
-          await grantQa5(buyerChatId);
-          await sendMessage(
-            buyerChatId,
-            "✅ Оплата подтверждена!\n\nМожете задать до 5 вопросов прямо здесь, сообщением — каждый вопрос будет передан Анастасии, ответ придёт вам сюда."
-          );
-        }
-        await clearPendingOrder(buyerChatId);
-        await answerCallback(cq.id, "Готово ✅");
-      } catch {
-        await answerCallback(cq.id, "Ошибка — проверьте базу данных");
-      }
-      return NextResponse.json({ ok: true });
-    }
-
     await answerCallback(cq.id);
     return NextResponse.json({ ok: true });
   }
@@ -226,15 +209,15 @@ export async function POST(req: NextRequest) {
     const name = [chat?.first_name, chat?.last_name].filter(Boolean).join(" ") || "без имени";
     const handle = chat?.username ? `@${chat.username}` : "без username";
 
+    await fulfillOrder(chatId, pending.productId);
+
     if (ADMIN_CHAT_ID) {
       await sendPhoto(
         Number(ADMIN_CHAT_ID),
         fileId,
-        `🧾 Чек на оплату\n\n${name} (${handle}), id ${chatId}\nТовар: ${product?.label ?? pending.productId}\nСумма: ${pending.price.toLocaleString("ru-RU")}₸\n\nПроверьте сумму и дату на чеке и подтвердите:`,
-        [[{ text: "✅ Подтвердить и выдать", callback_data: `confirm:${chatId}:${pending.productId}` }]]
+        `🧾 Чек получен, ключ выдан автоматически\n\n${name} (${handle}), id ${chatId}\nТовар: ${product?.label ?? pending.productId}\nСумма: ${pending.price.toLocaleString("ru-RU")}₸`
       );
     }
-    await sendMessage(chatId, "Чек получен, проверяем оплату. Обычно это занимает немного времени ⏳");
     return NextResponse.json({ ok: true });
   }
 
