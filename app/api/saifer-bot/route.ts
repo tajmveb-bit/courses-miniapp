@@ -28,6 +28,7 @@ interface TelegramUpdate {
     chat: { id: number; username?: string; first_name?: string; last_name?: string };
     text?: string;
     photo?: { file_id: string }[];
+    document?: { file_id: string; mime_type?: string };
   };
   callback_query?: {
     id: string;
@@ -58,6 +59,15 @@ function sendPhoto(chatId: number, fileId: string, caption: string, buttons?: In
   return tg("sendPhoto", {
     chat_id: chatId,
     photo: fileId,
+    caption,
+    reply_markup: buttons ? { inline_keyboard: buttons } : undefined,
+  });
+}
+
+function sendDocument(chatId: number, fileId: string, caption: string, buttons?: InlineButton[][]): Promise<void> {
+  return tg("sendDocument", {
+    chat_id: chatId,
+    document: fileId,
     caption,
     reply_markup: buttons ? { inline_keyboard: buttons } : undefined,
   });
@@ -99,11 +109,14 @@ function paymentInstructions(productLabel: string, price: number): string {
   );
 }
 
-// No payment verification — a received screenshot is treated as proof of payment and the
-// key is issued immediately, per an explicit decision to skip checking against Kaspi.
-async function fulfillOrder(chatId: number, productId: string): Promise<void> {
+// No payment verification — a received screenshot or PDF is treated as proof of payment and
+// the key is issued immediately, per an explicit decision to skip checking against Kaspi.
+// Returns a short summary of exactly what was issued, so the admin forward can prove it happened.
+async function fulfillOrder(chatId: number, productId: string): Promise<string> {
   const product = getProduct(productId);
-  if (!product) return;
+  if (!product) return "Товар не найден — ничего не выдано.";
+
+  let summary: string;
 
   if (product.kind === "section" && product.section) {
     const issued = await generateSingleCode(product.section);
@@ -111,19 +124,26 @@ async function fulfillOrder(chatId: number, productId: string): Promise<void> {
       chatId,
       `✅ Оплата получена!\n\nКод доступа к разделу «${issued.label}»: ${issued.code}\n\nВведите его в приложении в этом разделе, чтобы открыть полный разбор.`
     );
+    summary = `Выдан код: ${issued.code} (${issued.label})`;
   } else if (product.kind === "consult") {
     await sendMessage(
       chatId,
       "✅ Оплата получена!\n\nАнастасия свяжется с вами напрямую, чтобы согласовать время консультации."
     );
+    summary = "Клиент уведомлён — нужно связаться и назначить время консультации.";
   } else if (product.kind === "qa5") {
     await grantQa5(chatId);
     await sendMessage(
       chatId,
       "✅ Оплата получена!\n\nМожете задать до 5 вопросов прямо здесь, сообщением — каждый вопрос будет передан Анастасии, ответ придёт вам сюда."
     );
+    summary = "Активированы 5 вопросов.";
+  } else {
+    summary = "Ничего не выдано (неизвестный тип товара).";
   }
+
   await clearPendingOrder(chatId);
+  return summary;
 }
 
 export async function POST(req: NextRequest) {
@@ -185,6 +205,8 @@ export async function POST(req: NextRequest) {
   const chatId = chat?.id;
   const text = update.message?.text?.trim();
   const photo = update.message?.photo;
+  const document = update.message?.document;
+  const isPdfDocument = document && (document.mime_type ?? "").includes("pdf");
 
   if (chat) {
     try {
@@ -198,25 +220,28 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-  if (photo && photo.length > 0) {
+  // A screenshot or a PDF receipt (Kaspi lets you save either) — both count as a receipt.
+  const receiptFileId = photo && photo.length > 0 ? photo[photo.length - 1].file_id : isPdfDocument ? document!.file_id : null;
+
+  if (receiptFileId) {
     const pending = await getPendingOrder(chatId);
     if (!pending) {
       await sendMessage(chatId, "Не вижу активного заказа. Сначала выберите, что хотите приобрести:", mainMenu());
       return NextResponse.json({ ok: true });
     }
     const product = getProduct(pending.productId);
-    const fileId = photo[photo.length - 1].file_id;
     const name = [chat?.first_name, chat?.last_name].filter(Boolean).join(" ") || "без имени";
     const handle = chat?.username ? `@${chat.username}` : "без username";
 
-    await fulfillOrder(chatId, pending.productId);
+    const summary = await fulfillOrder(chatId, pending.productId);
 
     if (ADMIN_CHAT_ID) {
-      await sendPhoto(
-        Number(ADMIN_CHAT_ID),
-        fileId,
-        `🧾 Чек получен, ключ выдан автоматически\n\n${name} (${handle}), id ${chatId}\nТовар: ${product?.label ?? pending.productId}\nСумма: ${pending.price.toLocaleString("ru-RU")}₸`
-      );
+      const caption = `🧾 Чек получен\n\n${name} (${handle}), id ${chatId}\nТовар: ${product?.label ?? pending.productId}\nСумма: ${pending.price.toLocaleString("ru-RU")}₸\n\n${summary}`;
+      if (photo && photo.length > 0) {
+        await sendPhoto(Number(ADMIN_CHAT_ID), receiptFileId, caption);
+      } else {
+        await sendDocument(Number(ADMIN_CHAT_ID), receiptFileId, caption);
+      }
     }
     return NextResponse.json({ ok: true });
   }
