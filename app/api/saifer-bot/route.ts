@@ -21,6 +21,7 @@ interface InlineButton {
   text: string;
   callback_data?: string;
   web_app?: { url: string };
+  url?: string;
 }
 
 interface TelegramUpdate {
@@ -35,6 +36,10 @@ interface TelegramUpdate {
     from: { id: number };
     message?: { chat: { id: number } };
     data?: string;
+  };
+  my_chat_member?: {
+    chat: { id: number; title?: string; type: string };
+    new_chat_member: { status: string };
   };
 }
 
@@ -100,6 +105,24 @@ const WELCOME =
   "Здесь можно получить доступ к клубу «Точка Силы» — расчёт Матрицы судьбы, разборы по датам рождения и консультации с экспертом Анастасией Гафке.\n\n" +
   "Выберите, что вас интересует 👇";
 
+const CHANNEL_INTRO_POST =
+  "🔮 Клуб «Точка Силы»\n\n" +
+  "Рассчитайте свою личную Матрицу судьбы: предназначение, роковую ошибку, денежный и другие коды, прогнозы и совместимость — по авторской методике эксперта Анастасии Гафке.\n\n" +
+  "Что внутри:\n" +
+  "• Разборы по разделам Матрицы — от 5000₸\n" +
+  "• Полный прогноз — 15000₸\n" +
+  "• 5 вопросов по раскладам — 3000₸\n" +
+  "• Личная консультация с Анастасией — 50000₸\n\n" +
+  "Выбирайте, что вам ближе 👇";
+
+function channelCtaButtons(): InlineButton[][] {
+  return [
+    [{ text: "💳 Купить доступ", url: "https://t.me/Saifer_taro_bot?start=buy" }],
+    [{ text: "❓ Задать вопрос", url: "https://t.me/Saifer_taro_bot?start=ask" }],
+    [{ text: "📱 Открыть приложение", url: APP_URL }],
+  ];
+}
+
 function paymentInstructions(productLabel: string, price: number): string {
   return (
     `Отлично! «${productLabel}» — ${price.toLocaleString("ru-RU")}₸.\n\n` +
@@ -159,6 +182,22 @@ export async function POST(req: NextRequest) {
   }
 
   const update: TelegramUpdate = await req.json();
+
+  // Bot was just promoted to admin somewhere (e.g. a content channel) — publish the intro
+  // post with the CTA buttons right away and let the admin know the chat id for reference.
+  if (update.my_chat_member) {
+    const { chat, new_chat_member } = update.my_chat_member;
+    if (new_chat_member.status === "administrator" && chat.type !== "private") {
+      await sendMessage(chat.id, CHANNEL_INTRO_POST, channelCtaButtons());
+      if (ADMIN_CHAT_ID) {
+        await sendMessage(
+          Number(ADMIN_CHAT_ID),
+          `✅ Бота добавили админом в «${chat.title ?? chat.id}» (id ${chat.id}) — пост с кнопками опубликован.`
+        );
+      }
+    }
+    return NextResponse.json({ ok: true });
+  }
 
   // Button taps.
   if (update.callback_query) {
