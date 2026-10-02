@@ -12,7 +12,7 @@ import FatalMistakeSheet from "@/components/matrix/FatalMistakeSheet";
 import AncestralErrorSheet from "@/components/matrix/AncestralErrorSheet";
 import UnlockGate from "@/components/matrix/UnlockGate";
 import { useMatrixUnlock } from "@/lib/matrixUnlock";
-import { calculateMatrix, type MatrixResult } from "@/lib/matrix";
+import { calculateMatrix, getPersonalDestinyAttempt, type MatrixResult } from "@/lib/matrix";
 import { getArcanaEnergy, getFatalMistake } from "@/data/matrixArcana";
 import { getAncestralError } from "@/data/matrixAncestralErrors";
 import { getSavedBirthDate, saveBirthDate } from "@/lib/dateInput";
@@ -211,6 +211,17 @@ export default function MatrixPage() {
                 );
               })}
             </div>
+
+            {unlocked && (
+              <div className="mt-3 rounded-3xl bg-cream p-4">
+                <p className="text-sm font-semibold text-ink">
+                  Попытка №{getPersonalDestinyAttempt(result.day).attempt} в программе личности
+                </p>
+                <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
+                  {getPersonalDestinyAttempt(result.day).text}
+                </p>
+              </div>
+            )}
 
             <button
               type="button"
