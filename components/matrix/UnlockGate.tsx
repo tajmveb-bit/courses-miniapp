@@ -4,8 +4,7 @@ import { useState } from "react";
 import { Lock, MessageCircle } from "lucide-react";
 import { useMatrixUnlock } from "@/lib/matrixUnlock";
 import type { Section } from "@/lib/unlockCodes";
-import { openWhatsApp } from "@/lib/whatsapp";
-import { hapticImpact, hapticNotification } from "@/lib/telegram";
+import { hapticImpact, hapticNotification, openTelegramBot } from "@/lib/telegram";
 
 interface UnlockGateProps {
   section: Section;
@@ -40,7 +39,7 @@ export default function UnlockGate({
       </div>
       <h3 className="mt-4 text-lg font-semibold text-ink">{title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-        {description} — {price}. Напишите в WhatsApp, чтобы оформить доступ, и вы получите код
+        {description} — {price}. Оформите доступ у бота в Telegram, и вы получите код
         разблокировки.
       </p>
 
@@ -48,16 +47,16 @@ export default function UnlockGate({
         type="button"
         onClick={() => {
           hapticImpact("light");
-          openWhatsApp(`Здравствуйте! Хочу получить доступ к разделу «${title}» в Матрице судьбы.`);
+          openTelegramBot(section);
         }}
         className="tap-scale mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white shadow-button"
       >
         <MessageCircle className="w-5 h-5" strokeWidth={2} />
-        Написать в WhatsApp
+        Получить доступ в Telegram
       </button>
 
       <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-2">
-        <p className="text-xs text-ink-soft">Уже оплатили? Введите код из WhatsApp</p>
+        <p className="text-xs text-ink-soft">Уже оплатили? Введите код из Telegram</p>
         <div className="flex gap-2">
           <input
             value={code}

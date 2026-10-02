@@ -20,6 +20,7 @@ export interface TelegramWebApp {
   setHeaderColor?: (color: string) => void;
   setBackgroundColor?: (color: string) => void;
   enableClosingConfirmation?: () => void;
+  openTelegramLink?: (url: string) => void;
   colorScheme?: "light" | "dark";
   viewportHeight?: number;
   viewportStableHeight?: number;
@@ -74,4 +75,17 @@ export function hapticImpact(style: "light" | "medium" | "heavy" | "rigid" | "so
 
 export function hapticNotification(type: "error" | "success" | "warning" = "success"): void {
   getTelegramWebApp()?.HapticFeedback?.notificationOccurred(type);
+}
+
+// Opens a t.me link via Telegram's own in-app handler when running inside the Mini App
+// (so it switches to the bot chat instead of bouncing out to a browser), falling back to a
+// plain new tab outside Telegram.
+export function openTelegramBot(startParam?: string): void {
+  const url = `https://t.me/Saifer_taro_bot${startParam ? `?start=${startParam}` : ""}`;
+  const webApp = getTelegramWebApp();
+  if (webApp?.openTelegramLink) {
+    webApp.openTelegramLink(url);
+  } else {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
 }

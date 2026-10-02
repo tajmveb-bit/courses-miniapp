@@ -286,10 +286,11 @@ export async function POST(req: NextRequest) {
   }
 
   if (text?.startsWith("/start")) {
-    // Deep-link payload from a channel post button: t.me/<bot>?start=ask or ?start=buy.
+    // Deep-link payload: t.me/<bot>?start=<productId>, e.g. ?start=ask, ?start=code-money —
+    // used both by channel post buttons and by the app's own "get access" buttons.
     const payload = text.slice("/start".length).trim();
-    if (payload === "ask") {
-      const product = getProduct("qa5")!;
+    const product = payload === "ask" ? getProduct("qa5") : getProduct(payload);
+    if (product) {
       await setPendingOrder(chatId, product.id, product.price);
       await sendMessage(chatId, paymentInstructions(product.label, product.price));
     } else {
