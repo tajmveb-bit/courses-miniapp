@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { Section } from "@/lib/unlockCodes";
+import { getTelegramWebApp } from "@/lib/telegram";
 
 function storageKey(section: Section) {
   return `matrix:unlocked:${section}`;
@@ -31,6 +32,29 @@ export function useMatrixUnlock(section: Section) {
     setUnlocked(readUnlocked(section));
     const onChange = () => setUnlocked(readUnlocked(section));
     window.addEventListener(eventName(section), onChange);
+
+    // The sales bot may have already granted this section to the buyer's Telegram account —
+    // check so it shows unlocked right away, with no code to type.
+    const tgUserId = getTelegramWebApp()?.initDataUnsafe?.user?.id;
+    if (tgUserId) {
+      fetch(`/api/matrix-unlock?tgUserId=${tgUserId}&section=${section}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.unlocked) {
+            try {
+              window.localStorage.setItem(storageKey(section), "yes");
+            } catch {
+              // ignore
+            }
+            setUnlocked(true);
+            window.dispatchEvent(new Event(eventName(section)));
+          }
+        })
+        .catch(() => {
+          // Offline or Redis unreachable — the manual code entry still works as a fallback.
+        });
+    }
+
     return () => window.removeEventListener(eventName(section), onChange);
   }, [section]);
 

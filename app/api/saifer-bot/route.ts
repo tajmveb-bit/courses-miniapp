@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateSingleCode } from "@/lib/unlockCodes";
 import { recordUser } from "@/lib/botUsers";
-import { getProduct, SECTION_PRODUCTS } from "@/lib/salesProducts";
+import { grantAccess } from "@/lib/telegramUnlocks";
+import { getProduct, SECTION_PRODUCTS, type Product } from "@/lib/salesProducts";
 import {
   setPendingOrder,
   getPendingOrder,
@@ -132,6 +133,11 @@ function paymentInstructions(productLabel: string, price: number): string {
   );
 }
 
+function returnToAppButton(product: Product): InlineButton[][] {
+  const url = product.appPath ? `${APP_URL}${product.appPath}` : APP_URL;
+  return [[{ text: "📱 Вернуться в приложение", web_app: { url } }]];
+}
+
 // No payment verification — a received screenshot or PDF is treated as proof of payment and
 // the key is issued immediately, per an explicit decision to skip checking against Kaspi.
 // Returns a short summary of exactly what was issued, so the admin forward can prove it happened.
@@ -142,23 +148,29 @@ async function fulfillOrder(chatId: number, productId: string): Promise<string> 
   let summary: string;
 
   if (product.kind === "section" && product.section) {
+    // Grants it automatically for this Telegram account (checked via the Mini App's own
+    // initData) and also hands out a one-time code as a fallback for opening outside Telegram.
+    await grantAccess(chatId, product.section);
     const issued = await generateSingleCode(product.section);
     await sendMessage(
       chatId,
-      `✅ Оплата получена!\n\nКод доступа к разделу «${issued.label}»: ${issued.code}\n\nВведите его в приложении в этом разделе, чтобы открыть полный разбор.`
+      `✅ Оплата получена!\n\nДоступ к разделу «${issued.label}» уже открыт — просто откройте приложение, и раздел будет разблокирован сам.\n\nЕсли открываете не через этого бота, код для ручного ввода: ${issued.code}`,
+      returnToAppButton(product)
     );
-    summary = `Выдан код: ${issued.code} (${issued.label})`;
+    summary = `Доступ открыт автоматически (${issued.label}), резервный код: ${issued.code}`;
   } else if (product.kind === "consult") {
     await sendMessage(
       chatId,
-      "✅ Оплата получена!\n\nАнастасия свяжется с вами напрямую, чтобы согласовать время консультации."
+      "✅ Оплата получена!\n\nАнастасия свяжется с вами напрямую, чтобы согласовать время консультации.",
+      returnToAppButton(product)
     );
     summary = "Клиент уведомлён — нужно связаться и назначить время консультации.";
   } else if (product.kind === "qa5") {
     await grantQa5(chatId);
     await sendMessage(
       chatId,
-      "✅ Оплата получена!\n\nМожете задать до 5 вопросов прямо здесь, сообщением — каждый вопрос будет передан Анастасии, ответ придёт вам сюда."
+      "✅ Оплата получена!\n\nМожете задать до 5 вопросов прямо здесь, сообщением — каждый вопрос будет передан Анастасии, ответ придёт вам сюда.",
+      returnToAppButton(product)
     );
     summary = "Активированы 5 вопросов.";
   } else {
