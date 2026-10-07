@@ -129,6 +129,22 @@ function channelCtaButtons(): InlineButton[][] {
   ];
 }
 
+const GREETING_RE = /^\s*(привет|здравствуй|здравствуйте|добрый день|добрый вечер|доброе утро|хай|хелло|hello|hi)\b/i;
+const PRICE_RE = /цен|стоимост|сколько стоит|прайс|тариф/i;
+const MATRIX_RE = /матриц/i;
+const FORECAST_RE = /прогноз/i;
+const QA_RE = /расклад|таро|вопрос/i;
+const CONSULT_RE = /консультац/i;
+
+const MATRIX_INFO =
+  "Матрица судьбы — это ваш личный расчёт по дате рождения: 5 предназначений, роковая ошибка, кармические узлы, чакры и код души. Разбор одного раздела открывается сразу после оплаты, от 5000₸.\n\nКакой раздел интересует?";
+const FORECAST_INFO =
+  "Прогноз показывает, какая энергия действует на вас в конкретный год, месяц и день, плюс график жизненной энергии — считается на любую дату. 15000₸.";
+const QA_INFO =
+  "Можно задать до 5 вопросов по раскладам и получить ответы, основанные на материалах Анастасии — 3000₸ за комплект из 5 вопросов.";
+const CONSULT_INFO =
+  "Личная консультация с Анастасией — час живого разбора, где она отвечает на все ваши вопросы и разбирает Матрицу целиком. 50000₸.";
+
 function paymentInstructions(productLabel: string, price: number): string {
   return (
     `Отлично! «${productLabel}» — ${price.toLocaleString("ru-RU")}₸.\n\n` +
@@ -322,9 +338,32 @@ export async function POST(req: NextRequest) {
   }
 
   if (text) {
-    const lower = text.toLowerCase();
-    const asksAboutPrice = /цен|стоимост|сколько стоит|прайс|тариф/.test(lower);
-    if (asksAboutPrice) {
+    if (GREETING_RE.test(text)) {
+      await sendMessage(chatId, WELCOME, mainMenu());
+      return NextResponse.json({ ok: true });
+    }
+
+    if (MATRIX_RE.test(text)) {
+      await sendMessage(chatId, MATRIX_INFO, sectionsMenu());
+      return NextResponse.json({ ok: true });
+    }
+
+    if (FORECAST_RE.test(text)) {
+      await sendMessage(chatId, FORECAST_INFO, [[{ text: "📅 Оформить прогноз — 15000₸", callback_data: "buy:forecast" }]]);
+      return NextResponse.json({ ok: true });
+    }
+
+    if (CONSULT_RE.test(text)) {
+      await sendMessage(chatId, CONSULT_INFO, [[{ text: "💎 Записаться — 50000₸", callback_data: "buy:consult" }]]);
+      return NextResponse.json({ ok: true });
+    }
+
+    if (QA_RE.test(text)) {
+      await sendMessage(chatId, QA_INFO, [[{ text: "🗨 Задать вопросы — 3000₸", callback_data: "buy:qa5" }]]);
+      return NextResponse.json({ ok: true });
+    }
+
+    if (PRICE_RE.test(text)) {
       await sendMessage(chatId, WELCOME, mainMenu());
       return NextResponse.json({ ok: true });
     }
