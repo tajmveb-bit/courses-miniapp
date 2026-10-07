@@ -11,12 +11,15 @@ import {
   getQa5Remaining,
   decrementQa5,
 } from "@/lib/pendingOrders";
+import { getChatReply, type ChatMessage } from "@/lib/openai";
+import { getHistory, appendHistory } from "@/lib/chatHistory";
 
 const BOT_TOKEN = process.env.SAIFER_BOT_TOKEN;
 const WEBHOOK_SECRET = process.env.SAIFER_BOT_WEBHOOK_SECRET;
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
 const APP_URL = process.env.APP_URL ?? "https://courses-miniapp.vercel.app";
 const KASPI_LINK = "https://pay.kaspi.kz/pay/pdpl8uef";
+const AI_ENABLED = Boolean(process.env.OPENAI_API_KEY);
 
 interface InlineButton {
   text: string;
@@ -145,6 +148,22 @@ const QA_INFO =
 const CONSULT_INFO =
   "Личная консультация с Анастасией — час живого разбора, где она отвечает на все ваши вопросы и разбирает Матрицу целиком. 50000₸.";
 
+const SYSTEM_PROMPT = `Ты — Сайфер, бот-консультант клуба «Точка Силы» в Telegram (нумерология, расчёт Матрицы судьбы по авторской методике эксперта Анастасии Гафке).
+
+Твоя роль — дружелюбно общаться с людьми, которые пишут боту, рассказывать об услугах и ценах, отвечать на организационные вопросы и вести к покупке. Общайся тепло, как живой консультант, короткими сообщениями (2–4 предложения), на русском языке.
+
+Актуальные продукты и цены — используй ТОЛЬКО эти цифры, никогда не придумывай другие и не меняй их:
+- Разбор одного раздела Матрицы судьбы — 5000₸. Разделы (id для функции present_product в скобках): Матрица судьбы/предназначения (matrix), Кармические узлы (karmic-knots), Сфера духовности (spiritual-sphere), Сфера отношений (relationships), Совместимость (compatibility), Денежный код (code-money), Код удачи (code-luck), Код отношений (code-relationships), Код здоровья (code-health), Код духовного пути (code-spiritual).
+- Полный прогноз на год/месяц/день + график энергии — 15000₸ (id: forecast).
+- 5 вопросов по раскладам — 3000₸ за комплект (id: qa5).
+- Личная консультация с Анастасией, 60 минут — 50000₸ (id: consult).
+
+Жёсткие правила:
+1. Никогда сама не давай нумерологические трактовки и не придумывай значения арканов, кодов или прогнозов — ты консультант по продажам, а не эксперт по нумерологии. Если спрашивают конкретную расшифровку (что значит мой аркан, какой у меня код и т.д.) — объясни, что расчёт делается в приложении или на консультации с Анастасией, и предложи оформить нужный раздел.
+2. Никогда не называй другие цены, кроме перечисленных выше, и не обещай скидок.
+3. Когда человек явно готов перейти к оплате конкретного товара — вызови функцию present_product с нужным id. Саму цену и ссылку на оплату не пиши, это добавит система.
+4. Если не понимаешь, что хочет человек — переспроси или предложи команду /menu.`;
+
 function paymentInstructions(productLabel: string, price: number): string {
   return (
     `Отлично! «${productLabel}» — ${price.toLocaleString("ru-RU")}₸.\n\n` +
@@ -200,6 +219,37 @@ async function fulfillOrder(chatId: number, productId: string): Promise<string> 
 
   await clearPendingOrder(chatId);
   return summary;
+}
+
+// Returns true once it has sent a reply (success or a graceful AI-side refusal); false means
+// the OpenAI call itself failed, so the caller should fall back to the rule-based reply.
+async function handleAiChat(chatId: number, text: string): Promise<boolean> {
+  await appendHistory(chatId, "user", text);
+  const history = await getHistory(chatId);
+  const messages: ChatMessage[] = [{ role: "system", content: SYSTEM_PROMPT }, ...history];
+
+  const result = await getChatReply(messages);
+  if (!result.text && !result.productId) return false;
+
+  if (result.productId) {
+    const product = getProduct(result.productId);
+    if (product) {
+      await setPendingOrder(chatId, product.id, product.price);
+      const intro = result.text ? `${result.text}\n\n` : "";
+      const reply = `${intro}${paymentInstructions(product.label, product.price)}`;
+      await appendHistory(chatId, "assistant", reply);
+      await sendMessage(chatId, reply);
+      return true;
+    }
+  }
+
+  if (result.text) {
+    await appendHistory(chatId, "assistant", result.text);
+    await sendMessage(chatId, result.text, mainMenu());
+    return true;
+  }
+
+  return false;
 }
 
 export async function POST(req: NextRequest) {
@@ -338,7 +388,29 @@ export async function POST(req: NextRequest) {
   }
 
   if (text) {
-    if (GREETING_RE.test(text)) {
+    // Paid question credits take priority over general chat — those messages go to Anastasia.
+    const remaining = await getQa5Remaining(chatId);
+    if (remaining > 0) {
+      const left = await decrementQa5(chatId);
+      const name = [chat?.first_name, chat?.last_name].filter(Boolean).join(" ") || "без имени";
+      const handle = chat?.username ? `@${chat.username}` : "без username";
+      if (ADMIN_CHAT_ID) {
+        await sendMessage(
+          Number(ADMIN_CHAT_ID),
+          `❓ Вопрос от ${name} (${handle}), id ${chatId}, осталось ${left}/5:\n\n${text}`
+        );
+      }
+      await sendMessage(chatId, `Вопрос передан Анастасии, ответ придёт сюда. Осталось вопросов: ${left}`);
+      return NextResponse.json({ ok: true });
+    }
+
+    if (AI_ENABLED) {
+      const handled = await handleAiChat(chatId, text);
+      if (handled) return NextResponse.json({ ok: true });
+      // AI call failed (network/quota/etc.) — fall through to the rule-based reply below.
+    }
+
+    if (GREETING_RE.test(text) || PRICE_RE.test(text)) {
       await sendMessage(chatId, WELCOME, mainMenu());
       return NextResponse.json({ ok: true });
     }
@@ -360,26 +432,6 @@ export async function POST(req: NextRequest) {
 
     if (QA_RE.test(text)) {
       await sendMessage(chatId, QA_INFO, [[{ text: "🗨 Задать вопросы — 3000₸", callback_data: "buy:qa5" }]]);
-      return NextResponse.json({ ok: true });
-    }
-
-    if (PRICE_RE.test(text)) {
-      await sendMessage(chatId, WELCOME, mainMenu());
-      return NextResponse.json({ ok: true });
-    }
-
-    const remaining = await getQa5Remaining(chatId);
-    if (remaining > 0) {
-      const left = await decrementQa5(chatId);
-      const name = [chat?.first_name, chat?.last_name].filter(Boolean).join(" ") || "без имени";
-      const handle = chat?.username ? `@${chat.username}` : "без username";
-      if (ADMIN_CHAT_ID) {
-        await sendMessage(
-          Number(ADMIN_CHAT_ID),
-          `❓ Вопрос от ${name} (${handle}), id ${chatId}, осталось ${left}/5:\n\n${text}`
-        );
-      }
-      await sendMessage(chatId, `Вопрос передан Анастасии, ответ придёт сюда. Осталось вопросов: ${left}`);
       return NextResponse.json({ ok: true });
     }
 
