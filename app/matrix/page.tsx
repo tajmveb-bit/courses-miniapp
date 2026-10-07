@@ -16,8 +16,7 @@ import { calculateMatrix, getPersonalDestinyAttempt, type MatrixResult } from "@
 import { getArcanaEnergy, getFatalMistake } from "@/data/matrixArcana";
 import { getAncestralError } from "@/data/matrixAncestralErrors";
 import { getSavedBirthDate, saveBirthDate } from "@/lib/dateInput";
-import { hapticImpact, hapticSelection } from "@/lib/telegram";
-import { openWhatsApp } from "@/lib/whatsapp";
+import { hapticImpact, hapticSelection, openTelegramBot } from "@/lib/telegram";
 import { calculatePersonalYearArcana } from "@/lib/forecast";
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -397,12 +396,12 @@ export default function MatrixPage() {
                 type="button"
                 onClick={() => {
                   hapticImpact("light");
-                  openWhatsApp("Здравствуйте! Хочу записаться на личную консультацию с Анастасией по Матрице судьбы.");
+                  openTelegramBot("consult");
                 }}
                 className="tap-scale mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-4 text-base font-semibold text-beige-dark shadow-button"
               >
                 <MessageCircle className="w-5 h-5" strokeWidth={2} />
-                Записаться в WhatsApp
+                Записаться в Telegram
               </button>
             </div>
           </div>

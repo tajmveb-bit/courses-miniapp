@@ -1,81 +1,49 @@
 "use client";
 
-import { useState } from "react";
-import { Send } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import Disclaimer from "@/components/Disclaimer";
-import { openWhatsApp } from "@/lib/whatsapp";
-import { hapticImpact, hapticNotification } from "@/lib/telegram";
+import { hapticImpact, openTelegramBot } from "@/lib/telegram";
 
 const TOPICS = ["Матрица судьбы", "Прогноз", "Отношения", "Совместимость", "Консультация", "Другое"];
 
 export default function AskPage() {
-  const [topic, setTopic] = useState(TOPICS[0]);
-  const [message, setMessage] = useState("");
-  const [status, setStatus] = useState<"idle" | "sent">("idle");
-
-  const handleSubmit = () => {
-    if (!message.trim()) return;
-    const text = `Вопрос специалисту\nТема: ${topic}\n\n${message}`;
-    openWhatsApp(text);
-    setStatus("sent");
-    setMessage("");
-    hapticNotification("success");
-  };
-
   return (
     <main className="pt-safe-t pb-10">
       <div className="px-5 pt-6 animate-fade-up">
         <h1 className="text-3xl font-semibold tracking-tight text-ink">Задать вопрос</h1>
         <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-          Выберите тему и опишите ситуацию — вопрос уйдёт в WhatsApp, и вам ответят лично.
+          Бот Сайфер ответит на основные вопросы и подскажет, что подойдёт именно вам — пишите
+          прямо туда, в приложении переписку мы не ведём.
         </p>
       </div>
 
       <div className="px-5 mt-5 animate-fade-up [animation-delay:60ms] opacity-0">
-        <p className="text-xs font-medium text-ink-soft mb-2">Тема</p>
+        <p className="text-xs font-medium text-ink-soft mb-2">Можно спросить, например, про:</p>
         <div className="flex flex-wrap gap-2">
           {TOPICS.map((t) => (
-            <button
+            <span
               key={t}
-              type="button"
-              onClick={() => setTopic(t)}
-              className={`tap-scale rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                topic === t ? "bg-beige-dark text-white shadow-button" : "bg-white text-ink-soft shadow-card"
-              }`}
+              className="rounded-full bg-white px-4 py-2 text-sm font-medium text-ink-soft shadow-card"
             >
               {t}
-            </button>
+            </span>
           ))}
         </div>
 
-        <p className="text-xs font-medium text-ink-soft mt-5 mb-2">Ваш вопрос</p>
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          rows={5}
-          placeholder="Опишите ситуацию подробнее..."
-          className="w-full rounded-3xl bg-white p-4 text-sm text-ink shadow-card placeholder:text-ink-soft/60 outline-none focus:ring-2 focus:ring-beige-dark resize-none"
-        />
-
-        <div className="mt-4">
+        <div className="mt-5">
           <Disclaimer text="Клуб носит информационно-образовательный характер. Разборы не заменяют очную консультацию и не являются предсказанием будущего в буквальном смысле." />
         </div>
-
-        {status === "sent" && (
-          <p className="mt-3 text-xs text-beige-dark">Открылся WhatsApp — отправьте сообщение, чтобы задать вопрос.</p>
-        )}
 
         <button
           type="button"
           onClick={() => {
             hapticImpact("medium");
-            handleSubmit();
+            openTelegramBot("ask");
           }}
-          disabled={!message.trim()}
-          className="tap-scale mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white shadow-button disabled:opacity-50"
+          className="tap-scale mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white shadow-button"
         >
-          Отправить вопрос в WhatsApp
-          <Send className="w-4 h-4" strokeWidth={2} />
+          <MessageCircle className="w-5 h-5" strokeWidth={2} />
+          Задать вопрос боту
         </button>
       </div>
     </main>

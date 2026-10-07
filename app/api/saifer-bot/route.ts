@@ -102,9 +102,14 @@ function sectionsMenu(): InlineButton[][] {
 }
 
 const WELCOME =
-  "Привет! Я бот Сайфер 🔮\n\n" +
-  "Здесь можно получить доступ к клубу «Точка Силы» — расчёт Матрицы судьбы, разборы по датам рождения и консультации с экспертом Анастасией Гафке.\n\n" +
-  "Выберите, что вас интересует 👇";
+  "Здравствуйте! Меня зовут Сайфер 🔮\n\n" +
+  "Я расскажу, что вам подойдёт, и помогу оформить доступ к клубу «Точка Силы» — Матрице судьбы эксперта Анастасии Гафке.\n\n" +
+  "Коротко по ценам:\n" +
+  "• Разбор одного раздела Матрицы — от 5000₸\n" +
+  "• Полный прогноз на год/месяц/день — 15000₸\n" +
+  "• 5 вопросов по раскладам — 3000₸\n" +
+  "• Личная консультация с Анастасией (60 мин) — 50000₸\n\n" +
+  "Какая тема вас интересует? Выберите ниже 👇";
 
 const CHANNEL_INTRO_POST =
   "🔮 Клуб «Точка Силы»\n\n" +
@@ -317,6 +322,13 @@ export async function POST(req: NextRequest) {
   }
 
   if (text) {
+    const lower = text.toLowerCase();
+    const asksAboutPrice = /цен|стоимост|сколько стоит|прайс|тариф/.test(lower);
+    if (asksAboutPrice) {
+      await sendMessage(chatId, WELCOME, mainMenu());
+      return NextResponse.json({ ok: true });
+    }
+
     const remaining = await getQa5Remaining(chatId);
     if (remaining > 0) {
       const left = await decrementQa5(chatId);
@@ -332,7 +344,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
-    await sendMessage(chatId, "Не совсем поняла 🙂 Выберите, что вас интересует:", mainMenu());
+    await sendMessage(
+      chatId,
+      "Расскажите чуть подробнее, что вас интересует, или выберите готовый вариант ниже 👇",
+      mainMenu()
+    );
   }
 
   return NextResponse.json({ ok: true });
