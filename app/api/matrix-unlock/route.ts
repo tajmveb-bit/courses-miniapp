@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { isSection, redeemCode } from "@/lib/unlockCodes";
 import { hasAccess } from "@/lib/telegramUnlocks";
 
+// Must never be cached — it has to reflect Redis state from the instant the sales bot grants
+// access, not a snapshot from the first time this tgUserId+section pair was ever checked.
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
 // Checked on mount by the Mini App so a section the sales bot already granted (by Telegram
 // user id) shows unlocked immediately, with no code to type.
 export async function GET(req: NextRequest) {
@@ -15,7 +20,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const unlocked = await hasAccess(Number(tgUserId), section);
-    return NextResponse.json({ unlocked });
+    return NextResponse.json({ unlocked }, { headers: { "Cache-Control": "no-store" } });
   } catch {
     return NextResponse.json({ unlocked: false }, { status: 500 });
   }

@@ -34,10 +34,14 @@ export function useMatrixUnlock(section: Section) {
     window.addEventListener(eventName(section), onChange);
 
     // The sales bot may have already granted this section to the buyer's Telegram account —
-    // check so it shows unlocked right away, with no code to type.
-    const tgUserId = getTelegramWebApp()?.initDataUnsafe?.user?.id;
-    if (tgUserId) {
-      fetch(`/api/matrix-unlock?tgUserId=${tgUserId}&section=${section}`)
+    // check so it shows unlocked right away, with no code to type. Re-checked on mount AND
+    // whenever the app regains focus: Telegram often keeps the Mini App's WebView alive in the
+    // background while the person pays in the bot chat, so a mount-only check can miss it when
+    // they switch back without a full reload.
+    const checkServerUnlock = () => {
+      const tgUserId = getTelegramWebApp()?.initDataUnsafe?.user?.id;
+      if (!tgUserId) return;
+      fetch(`/api/matrix-unlock?tgUserId=${tgUserId}&section=${section}`, { cache: "no-store" })
         .then((res) => res.json())
         .then((data) => {
           if (data.unlocked) {
@@ -53,9 +57,20 @@ export function useMatrixUnlock(section: Section) {
         .catch(() => {
           // Offline or Redis unreachable — the manual code entry still works as a fallback.
         });
-    }
+    };
 
-    return () => window.removeEventListener(eventName(section), onChange);
+    checkServerUnlock();
+    const onVisible = () => {
+      if (document.visibilityState === "visible") checkServerUnlock();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", checkServerUnlock);
+
+    return () => {
+      window.removeEventListener(eventName(section), onChange);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", checkServerUnlock);
+    };
   }, [section]);
 
   const tryUnlock = useCallback(
