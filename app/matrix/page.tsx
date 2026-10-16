@@ -130,7 +130,7 @@ export default function MatrixPage() {
           <div className="px-5 mt-6 animate-fade-up [animation-delay:100ms] opacity-0">
             <button
               type="button"
-              onClick={() => setSelectedEnergyId(result.mainEnergy)}
+              onClick={() => (unlocked ? setSelectedEnergyId(result.mainEnergy) : goToUnlock())}
               className="tap-scale w-full rounded-4xl bg-white shadow-soft p-6 text-left flex items-center gap-4"
             >
               <span className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-beige-dark text-2xl font-semibold text-white shadow-button">
@@ -140,10 +140,15 @@ export default function MatrixPage() {
                 <p className="text-xs font-medium uppercase tracking-wide text-beige-dark">
                   Ваша главная энергия
                 </p>
-                <p className="mt-1 text-lg font-semibold text-ink">
-                  {getArcanaEnergy(result.mainEnergy)?.name}
-                </p>
-                <p className="mt-0.5 text-xs text-ink-soft">Нажмите, чтобы узнать больше</p>
+                {unlocked ? (
+                  <p className="mt-1 text-lg font-semibold text-ink">
+                    {getArcanaEnergy(result.mainEnergy)?.name}
+                  </p>
+                ) : (
+                  <div className="mt-1">
+                    <LockedLabel />
+                  </div>
+                )}
               </div>
             </button>
           </div>
@@ -151,7 +156,10 @@ export default function MatrixPage() {
           <div className="px-5 mt-6 animate-fade-up [animation-delay:110ms] opacity-0">
             <button
               type="button"
-              onClick={() => personalYearArcana !== null && setSelectedEnergyId(personalYearArcana)}
+              onClick={() => {
+                if (personalYearArcana === null) return;
+                unlocked ? setSelectedEnergyId(personalYearArcana) : goToUnlock();
+              }}
               className="tap-scale w-full rounded-4xl bg-white shadow-soft p-6 text-left flex items-center gap-4"
             >
               <span className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-beige-dark text-2xl font-semibold text-white shadow-button">
@@ -161,9 +169,15 @@ export default function MatrixPage() {
                 <p className="text-xs font-medium uppercase tracking-wide text-beige-dark">
                   Ваше число {CURRENT_YEAR} года
                 </p>
-                <p className="mt-1 text-lg font-semibold text-ink">
-                  {personalYearArcana !== null ? getArcanaEnergy(personalYearArcana)?.name : ""}
-                </p>
+                {unlocked ? (
+                  <p className="mt-1 text-lg font-semibold text-ink">
+                    {personalYearArcana !== null ? getArcanaEnergy(personalYearArcana)?.name : ""}
+                  </p>
+                ) : (
+                  <div className="mt-1">
+                    <LockedLabel />
+                  </div>
+                )}
                 <p className="mt-0.5 text-xs text-ink-soft">
                   Полный прогноз по месяцам и дням — в разделе «Прогноз»
                 </p>
@@ -174,9 +188,14 @@ export default function MatrixPage() {
           <div className="px-5 mt-6 animate-fade-up [animation-delay:120ms] opacity-0">
             <h2 className="text-lg font-semibold text-ink mb-3">Звезда</h2>
             <div className="rounded-4xl bg-white shadow-soft p-5">
-              <StarChart result={result} onSelectPoint={(value) => setSelectedEnergyId(value)} />
+              <StarChart
+                result={result}
+                onSelectPoint={(value) => (unlocked ? setSelectedEnergyId(value) : goToUnlock())}
+              />
               <p className="mt-4 text-center text-xs text-ink-soft">
-                Нажмите на любую цифру, чтобы узнать её значение
+                {unlocked
+                  ? "Нажмите на любую цифру, чтобы узнать её значение"
+                  : "Полная расшифровка каждой цифры — после открытия доступа"}
               </p>
             </div>
           </div>
@@ -251,6 +270,10 @@ export default function MatrixPage() {
                     key={label}
                     type="button"
                     onClick={() => {
+                      if (!unlocked) {
+                        goToUnlock();
+                        return;
+                      }
                       hapticSelection();
                       setAncestralLabel(label);
                     }}
@@ -261,9 +284,13 @@ export default function MatrixPage() {
                     </span>
                     <div className="min-w-0">
                       <p className="text-xs text-ink-soft leading-tight">{label}</p>
-                      <p className="text-sm font-semibold text-ink truncate">
-                        {getAncestralError(value)?.name}
-                      </p>
+                      {unlocked ? (
+                        <p className="text-sm font-semibold text-ink truncate">
+                          {getAncestralError(value)?.name}
+                        </p>
+                      ) : (
+                        <LockedLabel />
+                      )}
                     </div>
                   </button>
                 );
@@ -273,14 +300,24 @@ export default function MatrixPage() {
             <h2 className="text-lg font-semibold text-ink mb-3 mt-6">Чакры</h2>
             <div className="rounded-3xl bg-white p-4 shadow-card flex justify-between flex-wrap gap-y-3">
               {result.chakras.map((value, i) => (
-                <NumberBadge key={i} value={value} size="sm" onClick={() => setSelectedEnergyId(value)} />
+                <NumberBadge
+                  key={i}
+                  value={value}
+                  size="sm"
+                  onClick={() => (unlocked ? setSelectedEnergyId(value) : goToUnlock())}
+                />
               ))}
             </div>
 
             <h2 className="text-lg font-semibold text-ink mb-3 mt-6">Код души</h2>
             <div className="rounded-3xl bg-white p-4 shadow-card flex justify-center gap-6">
               {result.soulCode.map((value, i) => (
-                <NumberBadge key={i} value={value} size="md" onClick={() => setSelectedEnergyId(value)} />
+                <NumberBadge
+                  key={i}
+                  value={value}
+                  size="md"
+                  onClick={() => (unlocked ? setSelectedEnergyId(value) : goToUnlock())}
+                />
               ))}
             </div>
 
