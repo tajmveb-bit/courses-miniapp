@@ -21,6 +21,7 @@ export interface TelegramWebApp {
   setBackgroundColor?: (color: string) => void;
   enableClosingConfirmation?: () => void;
   openTelegramLink?: (url: string) => void;
+  openLink?: (url: string, options?: { try_instant_view?: boolean }) => void;
   colorScheme?: "light" | "dark";
   viewportHeight?: number;
   viewportStableHeight?: number;
@@ -87,5 +88,19 @@ export function openTelegramBot(startParam?: string): void {
     webApp.openTelegramLink(url);
   } else {
     window.open(url, "_blank", "noopener,noreferrer");
+  }
+}
+
+// Opens a regular (non-t.me) URL — e.g. a PDF on our own domain — via Telegram's own
+// external-link handler so it doesn't try to load it inside the Mini App's own WebView.
+// Accepts a relative path too (resolved against the current origin — openLink needs an
+// absolute URL).
+export function openExternalLink(url: string): void {
+  const absolute = typeof window !== "undefined" ? new URL(url, window.location.href).toString() : url;
+  const webApp = getTelegramWebApp();
+  if (webApp?.openLink) {
+    webApp.openLink(absolute);
+  } else {
+    window.open(absolute, "_blank", "noopener,noreferrer");
   }
 }

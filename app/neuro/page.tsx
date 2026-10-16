@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Sparkles, ArrowRight, Zap } from "lucide-react";
+import { Sparkles, ArrowRight, Zap, FileText } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import {
   calculateConsciousnessNumber,
   getConsciousnessNumber,
   getProtocolStep3,
 } from "@/data/consciousnessNumbers";
-import { hapticImpact, openTelegramBot } from "@/lib/telegram";
+import { hapticImpact, openExternalLink, openTelegramBot } from "@/lib/telegram";
 
 const PROTOCOL_STEPS_STATIC = [
   {
@@ -43,6 +43,20 @@ export default function NeuroPage() {
       <div className="px-5 pt-6 flex items-center gap-3 animate-fade-up">
         <BackButton fallbackHref="/more" />
         <h1 className="text-2xl font-semibold tracking-tight text-ink">Нейронастройка</h1>
+      </div>
+
+      <div className="px-5 mt-4 animate-fade-up [animation-delay:40ms] opacity-0">
+        <button
+          type="button"
+          onClick={() => {
+            hapticImpact("light");
+            openExternalLink("/neuro-nastroika.pdf");
+          }}
+          className="tap-scale flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-beige-dark shadow-card"
+        >
+          <FileText className="w-4 h-4" strokeWidth={2} />
+          Открыть PDF-плэйбук целиком
+        </button>
       </div>
 
       <div className="px-5 mt-4 animate-fade-up [animation-delay:60ms] opacity-0">
