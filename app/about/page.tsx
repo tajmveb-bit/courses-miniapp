@@ -12,6 +12,12 @@ const POINTS = [
   "Мне 43 года, и на собственном опыте я доказываю: зрелость, красота, сильный системный бизнес и женственность великолепно дополняют друг друга.",
 ];
 
+const STORY = [
+  "У меня два фундаментальных образования — экономическое и медицинское, и двадцать лет в бизнесе: своя клиника, бутик, линия косметики, собственные гаджеты. Снаружи всё выглядело правильно — сильная женщина, у которой всё получается.",
+  "А внутри годами были жёсткие отношения, в которых я теряла себя, держала всё: дело, людей, дом. Числа стали для меня языком, которым можно описать энергию, влияющую на решения, отношения и деньги, — не магия и не гадание, а система, понятная как карта.",
+  "Так появился метод «Сайфер» — соединение Матрицы судьбы и 64 Генных Ключей. Когда я перестала ломать себя под чужой сценарий и начала жить по своей инструкции, вернулись силы, ясность и деньги.",
+];
+
 export default function AboutPage() {
   return (
     <main className="pt-safe-t pb-10">
@@ -50,6 +56,17 @@ export default function AboutPage() {
       <div className="px-5 mt-6 animate-fade-up [animation-delay:140ms] opacity-0">
         <div className="rounded-4xl bg-white shadow-soft p-6 flex flex-col gap-4">
           {POINTS.map((text) => (
+            <p key={text} className="text-sm leading-relaxed text-ink-soft">
+              {text}
+            </p>
+          ))}
+        </div>
+      </div>
+
+      <div className="px-5 mt-8 animate-fade-up [animation-delay:160ms] opacity-0">
+        <h3 className="text-lg font-semibold text-ink mb-3">Моя история</h3>
+        <div className="rounded-4xl bg-white shadow-soft p-6 flex flex-col gap-4">
+          {STORY.map((text) => (
             <p key={text} className="text-sm leading-relaxed text-ink-soft">
               {text}
             </p>
