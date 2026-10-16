@@ -16,7 +16,7 @@ import { calculateMatrix, getPersonalDestinyAttempt, type MatrixResult } from "@
 import { getArcanaEnergy, getFatalMistake } from "@/data/matrixArcana";
 import { getAncestralError } from "@/data/matrixAncestralErrors";
 import { getSavedBirthDate, saveBirthDate } from "@/lib/dateInput";
-import { hapticImpact, hapticSelection, openTelegramBot } from "@/lib/telegram";
+import { hapticImpact, hapticSelection, requestBotAccess } from "@/lib/telegram";
 import { calculatePersonalYearArcana } from "@/lib/forecast";
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -433,7 +433,7 @@ export default function MatrixPage() {
                 type="button"
                 onClick={() => {
                   hapticImpact("light");
-                  openTelegramBot("consult");
+                  requestBotAccess("consult");
                 }}
                 className="tap-scale mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-4 text-base font-semibold text-beige-dark shadow-button"
               >

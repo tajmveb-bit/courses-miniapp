@@ -91,6 +91,33 @@ export function openTelegramBot(startParam?: string): void {
   }
 }
 
+// Routes a client to the sales bot for a specific product. A plain ?start= deep link only
+// delivers its payload the FIRST time a person ever opens the bot — Telegram silently drops it
+// for anyone who already has a chat with it (returning buyers), just switching to the existing
+// chat with nothing sent. So this tries a direct server-side message first (works for anyone
+// who has messaged the bot before, i.e. every repeat buyer) and only falls back to the deep link
+// when that's not possible — no tgUserId available, or the send fails (genuinely first contact).
+export async function requestBotAccess(productId: string): Promise<void> {
+  const tgUserId = getTelegramWebApp()?.initDataUnsafe?.user?.id;
+  if (tgUserId) {
+    try {
+      const res = await fetch("/api/request-access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tgUserId, productId }),
+      });
+      const data = await res.json();
+      if (data?.ok) {
+        openTelegramBot();
+        return;
+      }
+    } catch {
+      // fall through to the deep link below
+    }
+  }
+  openTelegramBot(productId);
+}
+
 // Opens a regular (non-t.me) URL — e.g. a PDF on our own domain — via Telegram's own
 // external-link handler so it doesn't try to load it inside the Mini App's own WebView.
 // Accepts a relative path too (resolved against the current origin — openLink needs an

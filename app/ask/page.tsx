@@ -2,7 +2,7 @@
 
 import { MessageCircle } from "lucide-react";
 import Disclaimer from "@/components/Disclaimer";
-import { hapticImpact, openTelegramBot } from "@/lib/telegram";
+import { hapticImpact, requestBotAccess } from "@/lib/telegram";
 
 const TOPICS = ["Матрица судьбы", "Прогноз", "Отношения", "Совместимость", "Консультация", "Другое"];
 
@@ -38,7 +38,7 @@ export default function AskPage() {
           type="button"
           onClick={() => {
             hapticImpact("medium");
-            openTelegramBot("ask");
+            requestBotAccess("qa5");
           }}
           className="tap-scale mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white shadow-button"
         >

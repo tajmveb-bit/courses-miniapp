@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Lock, MessageCircle } from "lucide-react";
 import { useMatrixUnlock } from "@/lib/matrixUnlock";
 import type { Section } from "@/lib/unlockCodes";
-import { hapticImpact, hapticNotification, openTelegramBot } from "@/lib/telegram";
+import { hapticImpact, hapticNotification, requestBotAccess } from "@/lib/telegram";
 
 interface UnlockGateProps {
   section: Section;
@@ -47,7 +47,7 @@ export default function UnlockGate({
         type="button"
         onClick={() => {
           hapticImpact("light");
-          openTelegramBot(section);
+          requestBotAccess(section);
         }}
         className="tap-scale mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white shadow-button"
       >

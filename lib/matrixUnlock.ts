@@ -33,6 +33,40 @@ export function useMatrixUnlock(section: Section) {
     const onChange = () => setUnlocked(readUnlocked(section));
     window.addEventListener(eventName(section), onChange);
 
+    // A one-time code baked into the URL by the bot's "Вернуться в приложение" button —
+    // redeemed automatically through the same reliable endpoint manual entry uses. This doesn't
+    // depend on Telegram initData or launch context at all, unlike the tgUserId check below.
+    const params = new URLSearchParams(window.location.search);
+    const autoCode = params.get("unlockCode");
+    if (autoCode) {
+      fetch("/api/matrix-unlock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: autoCode, section }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.valid) {
+            try {
+              window.localStorage.setItem(storageKey(section), "yes");
+            } catch {
+              // ignore
+            }
+            setUnlocked(true);
+            window.dispatchEvent(new Event(eventName(section)));
+          }
+        })
+        .catch(() => {
+          // Offline — the manual code entry still works as a fallback.
+        })
+        .finally(() => {
+          // Strip it from the URL so a refresh or share doesn't try to redeem it again.
+          params.delete("unlockCode");
+          const search = params.toString();
+          window.history.replaceState({}, "", window.location.pathname + (search ? `?${search}` : ""));
+        });
+    }
+
     // The sales bot may have already granted this section to the buyer's Telegram account —
     // check so it shows unlocked right away, with no code to type. Re-checked on mount AND
     // whenever the app regains focus: Telegram often keeps the Mini App's WebView alive in the

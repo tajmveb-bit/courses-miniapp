@@ -13,12 +13,12 @@ import {
 } from "@/lib/pendingOrders";
 import { getChatReply, type ChatMessage } from "@/lib/openai";
 import { getHistory, appendHistory } from "@/lib/chatHistory";
+import { paymentInstructionsText } from "@/lib/saiferBot";
 
 const BOT_TOKEN = process.env.SAIFER_BOT_TOKEN;
 const WEBHOOK_SECRET = process.env.SAIFER_BOT_WEBHOOK_SECRET;
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
 const APP_URL = process.env.APP_URL ?? "https://courses-miniapp.vercel.app";
-const KASPI_LINK = "https://pay.kaspi.kz/pay/pdpl8uef";
 const AI_ENABLED = Boolean(process.env.OPENAI_API_KEY);
 
 interface InlineButton {
@@ -164,17 +164,12 @@ const SYSTEM_PROMPT = `Ты — Сайфер, бот-консультант кл
 3. Когда человек явно готов перейти к оплате конкретного товара — вызови функцию present_product с нужным id. Саму цену и ссылку на оплату не пиши, это добавит система.
 4. Если не понимаешь, что хочет человек — переспроси или предложи команду /menu.`;
 
-function paymentInstructions(productLabel: string, price: number): string {
-  return (
-    `Отлично! «${productLabel}» — ${price.toLocaleString("ru-RU")}₸.\n\n` +
-    `1. Оплатите по ссылке: ${KASPI_LINK}\n` +
-    `2. Пришлите сюда скриншот чека\n\n` +
-    `Как только чек придёт, доступ откроется сразу.`
-  );
-}
-
-function returnToAppButton(product: Product): InlineButton[][] {
-  const url = product.appPath ? `${APP_URL}${product.appPath}` : APP_URL;
+function returnToAppButton(product: Product, autoCode?: string): InlineButton[][] {
+  const base = product.appPath ? `${APP_URL}${product.appPath}` : APP_URL;
+  // Baking the one-time code into the return URL makes unlocking fully deterministic — the
+  // app auto-redeems it on load via the same reliable POST /api/matrix-unlock flow already used
+  // for manual entry. It doesn't depend on Telegram initData or Mini App launch context at all.
+  const url = autoCode ? `${base}?unlockCode=${encodeURIComponent(autoCode)}` : base;
   return [[{ text: "📱 Вернуться в приложение", web_app: { url } }]];
 }
 
@@ -195,7 +190,7 @@ async function fulfillOrder(chatId: number, productId: string): Promise<string> 
     await sendMessage(
       chatId,
       `✅ Оплата получена!\n\nДоступ к разделу «${issued.label}» уже открыт — просто откройте приложение, и раздел будет разблокирован сам.\n\nЕсли открываете не через этого бота, код для ручного ввода: ${issued.code}`,
-      returnToAppButton(product)
+      returnToAppButton(product, issued.code)
     );
     summary = `Доступ открыт автоматически (${issued.label}), резервный код: ${issued.code}`;
   } else if (product.kind === "consult") {
@@ -236,7 +231,7 @@ async function handleAiChat(chatId: number, text: string): Promise<boolean> {
     if (product) {
       await setPendingOrder(chatId, product.id, product.price);
       const intro = result.text ? `${result.text}\n\n` : "";
-      const reply = `${intro}${paymentInstructions(product.label, product.price)}`;
+      const reply = `${intro}${paymentInstructionsText(product.label, product.price)}`;
       await appendHistory(chatId, "assistant", reply);
       await sendMessage(chatId, reply);
       return true;
@@ -313,7 +308,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ ok: true });
       }
       await setPendingOrder(chatId, product.id, product.price);
-      await sendMessage(chatId, paymentInstructions(product.label, product.price));
+      await sendMessage(chatId, paymentInstructionsText(product.label, product.price));
       await answerCallback(cq.id);
       return NextResponse.json({ ok: true });
     }
@@ -375,7 +370,7 @@ export async function POST(req: NextRequest) {
     const product = payload === "ask" ? getProduct("qa5") : getProduct(payload);
     if (product) {
       await setPendingOrder(chatId, product.id, product.price);
-      await sendMessage(chatId, paymentInstructions(product.label, product.price));
+      await sendMessage(chatId, paymentInstructionsText(product.label, product.price));
     } else {
       await sendMessage(chatId, WELCOME, mainMenu());
     }
