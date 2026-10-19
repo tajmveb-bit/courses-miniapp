@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Sparkles, User, ShieldCheck, Coins, Clover, Heart, HeartPulse, Moon, Zap } from "lucide-react";
+import { Sparkles, User, ShieldCheck, Coins, Clover, Heart, HeartPulse, Moon, Zap, Compass } from "lucide-react";
 import { CODES } from "@/data/matrixCodes";
 
 const ITEMS = [
   { href: "/matrix", label: "Матрица судьбы", icon: Sparkles },
+  { href: "/archetype", label: "Тест на архетип", icon: Compass },
   { href: "/neuro", label: "Нейронастройка", icon: Zap },
   { href: "/about", label: "Об эксперте", icon: User },
   { href: "/rules", label: "Правила клуба", icon: ShieldCheck },
