@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Sparkles, User, ShieldCheck, Coins, Clover, Heart, HeartPulse, Moon, Zap, Compass } from "lucide-react";
+import { Sparkles, User, ShieldCheck, Coins, Clover, Heart, HeartPulse, Moon, Zap, Compass, Send } from "lucide-react";
 import { CODES } from "@/data/matrixCodes";
+import { SOCIAL_LINKS } from "@/lib/socialLinks";
 
 const ITEMS = [
   { href: "/matrix", label: "Матрица судьбы", icon: Sparkles },
@@ -34,6 +35,17 @@ export default function MorePage() {
             <p className="text-sm font-semibold text-ink leading-snug">{label}</p>
           </Link>
         ))}
+        <a
+          href={SOCIAL_LINKS.telegram}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="tap-scale flex flex-col gap-3 rounded-3xl bg-white p-4 shadow-card"
+        >
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-beige-light">
+            <Send className="w-5 h-5 text-beige-dark" strokeWidth={1.8} />
+          </div>
+          <p className="text-sm font-semibold text-ink leading-snug">Телеграм-канал</p>
+        </a>
       </div>
 
       <div className="px-5 mt-8 animate-fade-up [animation-delay:100ms] opacity-0">

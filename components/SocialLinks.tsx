@@ -2,14 +2,7 @@
 
 import { Instagram, Send, Youtube } from "lucide-react";
 import { hapticSelection } from "@/lib/telegram";
-
-// Placeholder links — replace with the expert's real profiles later.
-export const SOCIAL_LINKS = {
-  instagram: "https://instagram.com/",
-  telegram: "https://t.me/",
-  youtube: "https://youtube.com/",
-  vk: "https://vk.com/",
-};
+import { SOCIAL_LINKS } from "@/lib/socialLinks";
 
 function VkIcon({ className }: { className?: string }) {
   return (
