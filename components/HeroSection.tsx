@@ -8,14 +8,14 @@ export default function HeroSection() {
   return (
     <section className="px-5 pt-6 animate-fade-up">
       <div className="relative rounded-5xl bg-white shadow-soft overflow-hidden">
-        <div className="relative h-72 w-full bg-ink">
+        <div className="relative w-full aspect-video bg-ink">
           <video
             src="/videos/hero.mp4"
             poster="/images/expert.jpg"
             controls
             playsInline
             preload="metadata"
-            className="absolute inset-0 h-full w-full object-cover object-[50%_8%]"
+            className="absolute inset-0 h-full w-full object-contain"
           />
         </div>
 
