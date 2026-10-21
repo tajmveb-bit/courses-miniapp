@@ -10,9 +10,9 @@ const config: Config = {
       colors: {
         cream: "#F7F3ED",
         beige: {
-          light: "#EFE7DC",
-          DEFAULT: "#C9A77E",
-          dark: "#B08F63",
+          light: "#F3E3E6",
+          DEFAULT: "#8C3B4E",
+          dark: "#6E2436",
         },
         ink: {
           DEFAULT: "#3F3A35",
@@ -37,7 +37,7 @@ const config: Config = {
         soft: "0 8px 30px rgba(63, 58, 53, 0.08)",
         card: "0 4px 20px rgba(63, 58, 53, 0.06)",
         lifted: "0 20px 40px rgba(63, 58, 53, 0.12)",
-        button: "0 10px 24px rgba(201, 167, 126, 0.35)",
+        button: "0 10px 24px rgba(110, 36, 54, 0.35)",
       },
       spacing: {
         "safe-b": "env(safe-area-inset-bottom)",
