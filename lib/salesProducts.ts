@@ -28,6 +28,7 @@ export const PRODUCTS: Product[] = [
   { id: "forecast", label: "Полный прогноз", price: 15000, kind: "section", section: "forecast", appPath: "/matrix/forecast" },
   { id: "qa5", label: "5 вопросов по раскладам", price: 3000, kind: "qa5" },
   { id: "consult", label: "Консультация с Анастасией (60 мин)", price: 50000, kind: "consult" },
+  { id: "money-number", label: "Матрица судьбы + денежный номер", price: 150000, kind: "consult" },
 ];
 
 export function getProduct(id: string): Product | undefined {

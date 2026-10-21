@@ -25,6 +25,7 @@ const PRODUCT_IDS = [
   "forecast",
   "qa5",
   "consult",
+  "money-number",
 ] as const;
 
 const PRESENT_PRODUCT_TOOL = {
