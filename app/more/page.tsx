@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles, User, ShieldCheck, Coins, Clover, Heart, HeartPulse, Moon, Zap, Compass, Send } from "lucide-react";
+import { Sparkles, User, ShieldCheck, Coins, Clover, Heart, HeartPulse, Moon, Zap, Compass, Send, Smartphone } from "lucide-react";
 import { CODES } from "@/data/matrixCodes";
 import { SOCIAL_LINKS } from "@/lib/socialLinks";
 
@@ -7,6 +7,7 @@ const ITEMS = [
   { href: "/matrix", label: "Матрица судьбы", icon: Sparkles },
   { href: "/archetype", label: "Тест на архетип", icon: Compass },
   { href: "/neuro", label: "Нейронастройка", icon: Zap },
+  { href: "/money-number", label: "Денежный номер", icon: Smartphone },
   { href: "/about", label: "Об эксперте", icon: User },
   { href: "/rules", label: "Правила клуба", icon: ShieldCheck },
 ] as const;
