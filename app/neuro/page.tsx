@@ -52,8 +52,12 @@ export default function NeuroPage() {
             hapticImpact("light");
             openExternalLink("/neuro-nastroika.pdf");
           }}
-          className="tap-scale flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-beige-dark shadow-card"
+          className="tap-scale pulse-glow relative overflow-hidden flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-3.5 text-sm font-semibold text-white"
         >
+          <span
+            className="gs-shine absolute inset-y-0 left-0 w-[34%] pointer-events-none"
+            style={{ background: "linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.45), rgba(255,255,255,0))" }}
+          />
           <FileText className="w-4 h-4" strokeWidth={2} />
           Открыть PDF-плэйбук целиком
         </button>
