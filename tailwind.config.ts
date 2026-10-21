@@ -27,6 +27,7 @@ const config: Config = {
           "'Segoe UI'",
           "sans-serif",
         ],
+        serif: ["'Cormorant Garamond'", "Georgia", "serif"],
       },
       borderRadius: {
         "3xl": "1.75rem",
