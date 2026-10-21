@@ -11,7 +11,7 @@ export default function HeroSection() {
         <div className="relative w-full aspect-video bg-ink">
           <video
             src="/videos/hero.mp4"
-            poster="/images/expert.jpg"
+            poster="/images/hero-poster.jpg"
             controls
             playsInline
             preload="metadata"
