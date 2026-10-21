@@ -40,7 +40,7 @@ export default function AskPage() {
             hapticImpact("medium");
             requestBotAccess("qa5");
           }}
-          className="tap-scale mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white shadow-button"
+          className="tap-scale mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white pulse-glow"
         >
           <MessageCircle className="w-5 h-5" strokeWidth={2} />
           Задать вопрос боту

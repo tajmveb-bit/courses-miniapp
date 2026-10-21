@@ -62,7 +62,7 @@ export default function CodePage() {
             type="button"
             disabled={dateInput.length !== 10}
             onClick={handleCalculate}
-            className="tap-scale mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white shadow-button disabled:opacity-40"
+            className="tap-scale mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white pulse-glow disabled:opacity-40"
           >
             <Sparkles className="w-5 h-5" strokeWidth={2} />
             Рассчитать

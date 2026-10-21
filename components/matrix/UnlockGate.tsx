@@ -34,7 +34,7 @@ export default function UnlockGate({
 
   return (
     <div className="rounded-4xl bg-white shadow-soft p-6 text-center">
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-beige-light">
+      <div className="float-soft mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-beige-light">
         <Lock className="w-6 h-6 text-beige-dark" strokeWidth={1.8} />
       </div>
       <h3 className="mt-4 text-lg font-semibold text-ink">{title}</h3>
@@ -49,7 +49,7 @@ export default function UnlockGate({
           hapticImpact("light");
           requestBotAccess(section);
         }}
-        className="tap-scale mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white shadow-button"
+        className="tap-scale pulse-glow mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white"
       >
         <MessageCircle className="w-5 h-5" strokeWidth={2} />
         Получить доступ в Telegram

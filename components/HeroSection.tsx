@@ -38,7 +38,7 @@ export default function HeroSection() {
         <Link
           href="/matrix"
           onClick={() => hapticImpact("light")}
-          className="tap-scale flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white shadow-button"
+          className="tap-scale pulse-glow flex w-full items-center justify-center gap-2 rounded-full bg-beige-dark px-6 py-4 text-base font-semibold text-white"
         >
           <Sparkles className="w-5 h-5" strokeWidth={2} />
           Рассчитать Матрицу судьбы
