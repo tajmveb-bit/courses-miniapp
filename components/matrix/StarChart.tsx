@@ -20,8 +20,8 @@ const SIZE_CLASSES: Record<"lg" | "md" | "sm", string> = {
 // наложения кружков. Поэтому у md/sm точек тень заметно легче и компактнее.
 const SHADOW_CLASSES: Record<"lg" | "md" | "sm", string> = {
   lg: "shadow-button",
-  md: "shadow-[0_3px_8px_rgba(126,155,189,0.3)]",
-  sm: "shadow-[0_1px_3px_rgba(126,155,189,0.25)]",
+  md: "shadow-[0_3px_8px_rgba(201,167,126,0.3)]",
+  sm: "shadow-[0_1px_3px_rgba(201,167,126,0.25)]",
 };
 
 const CIRCLE_DURATION = 1.1;
@@ -131,7 +131,7 @@ export default function StarChart({ result, onSelectPoint }: StarChartProps) {
           cy="50"
           r="49"
           fill="#fff"
-          stroke="#7E9BBD"
+          stroke="#C9A77E"
           strokeWidth="0.6"
           strokeOpacity="0.35"
           initial={{ pathLength: 0 }}
@@ -141,7 +141,7 @@ export default function StarChart({ result, onSelectPoint }: StarChartProps) {
         <motion.polyline
           points={polylinePoints}
           fill="none"
-          stroke="#7E9BBD"
+          stroke="#C9A77E"
           strokeWidth="0.7"
           strokeLinejoin="round"
           initial={{ pathLength: 0 }}
