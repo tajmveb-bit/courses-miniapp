@@ -27,14 +27,14 @@ export default function EnergyGraphChart({ digits, startAge = 17, onSelectValue 
   return (
     <div className="w-full">
       <svg viewBox={`0 -6 ${width} ${height + 12}`} className="w-full h-40">
-        <polyline points={polyline} fill="none" stroke="#C9A77E" strokeWidth="1.2" strokeLinejoin="round" strokeLinecap="round" />
+        <polyline points={polyline} fill="none" stroke="#8C3B4E" strokeWidth="1.2" strokeLinejoin="round" strokeLinecap="round" />
         {points.map((p, i) => (
           <circle
             key={i}
             cx={p.x}
             cy={p.y}
             r={activeIndex === i ? 2.6 : 1.8}
-            fill={activeIndex === i ? "#B08F63" : "#C9A77E"}
+            fill={activeIndex === i ? "#6E2436" : "#8C3B4E"}
             stroke="#fff"
             strokeWidth="0.6"
             onClick={() => {

@@ -94,7 +94,7 @@ export default function HeroSection() {
           </div>
           <div
             className="absolute inset-0 pointer-events-none"
-            style={{ background: "linear-gradient(90deg, #B08F63 0%, rgba(201,167,126,0) 14%, rgba(201,167,126,0) 86%, #B08F63 100%)" }}
+            style={{ background: "linear-gradient(90deg, #6E2436 0%, rgba(110,36,54,0) 14%, rgba(110,36,54,0) 86%, #6E2436 100%)" }}
           />
         </div>
       </div>
@@ -118,7 +118,7 @@ export default function HeroSection() {
             onClick={() => hapticImpact("light")}
             className="tap-scale flex items-center justify-center gap-2 rounded-full bg-white px-4 py-3.5 text-sm font-semibold text-ink shadow-card"
           >
-            <Compass className="w-4 h-4" style={{ color: "#B08F63" }} strokeWidth={2} />
+            <Compass className="w-4 h-4" style={{ color: "#6E2436" }} strokeWidth={2} />
             Совместимость
           </Link>
           <Link
@@ -126,7 +126,7 @@ export default function HeroSection() {
             onClick={() => hapticImpact("light")}
             className="tap-scale flex items-center justify-center gap-2 rounded-full bg-white px-4 py-3.5 text-sm font-semibold text-ink shadow-card"
           >
-            <MessageCircle className="w-4 h-4" style={{ color: "#B08F63" }} strokeWidth={2} />
+            <MessageCircle className="w-4 h-4" style={{ color: "#6E2436" }} strokeWidth={2} />
             Задать вопрос
           </Link>
         </div>
